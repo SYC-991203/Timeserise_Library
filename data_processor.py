@@ -33,19 +33,43 @@ init=1 # init 指每个IMF的中心频率进行初始化。当初始化为1时�
 tol=1e-7 # 控制误差大小常量，决定精度与迭代次数
 # 输出U是各个IMF分量，u_hat是各IMF的频谱，omega为各IMF的中心频率
 result_u_list =[]
+error_our_list = []
+error_cer_list = []
+error_kla_list = []
+
 u_our,u_our_hat,omega_our = VMD(our,alpha, tau, K, DC, init, tol) ## tuple:u, u_hat, omega
 u_cer,u_cer_hat,omege_cer = VMD(cer,alpha, tau, K, DC, init, tol)
 u_kla,u_kla_hat,omega_kla = VMD(kla,alpha, tau, K, DC, init, tol)
+
+for i in range(len(our)):
+    e_our = our[i]
+    e_cer = cer[i]
+    e_kla = kla[i]
+    for j in range(K):
+        e_our -= u_our[j][i]
+        e_cer -= u_cer[j][i] 
+        e_kla -= u_kla[j][i]
+    error_our_list.append(e_our)
+    error_cer_list.append(e_cer)
+    error_kla_list.append(e_kla)
+
 result_u_list.extend([u_our.T,u_cer.T,u_kla.T])
-u_data = {"u_our_imf0":u_our[0],"u_our_imf1":u_our[1],"u_our_imf2":u_our[2],
-        "u_cer_imf0":u_cer[0],"u_cer_imf1":u_cer[1],"u_cer_imf2":u_cer[2],
-        "u_kla_imf0":u_kla[0],"u_kla_imf1":u_kla[1],"u_kla_imf2":u_kla[2]}
+u_data = {}
+for i in range(len(u_our)):
+    u_data[f"u_our_imf{i}"] = u_our[i]
+    u_data[f"u_cer_imf{i}"] = u_cer[i]
+    u_data[f"u_kla_imf{i}"] = u_kla[i]
+u_data.update({"u_our_error":error_our_list,"u_cer_error":error_cer_list,"u_kla_error":error_kla_list})
+
+# u_data = {"u_our_imf0":u_our[0],"u_our_imf1":u_our[1],"u_our_imf2":u_our[2],
+#         "u_cer_imf0":u_cer[0],"u_cer_imf1":u_cer[1],"u_cer_imf2":u_cer[2],
+#         "u_kla_imf0":u_kla[0],"u_kla_imf1":u_kla[1],"u_kla_imf2":u_kla[2]}
 u_df = pd.DataFrame(u_data)
-existing_cols = original_data.columns.intersection(u_df.columns)
-if len(existing_cols)>0:
-    original_data[existing_cols] = u_df[existing_cols]
-else:## 没有写入。直接续写
-    original_with_u = pd.concat([original_data,u_df],axis =1)
+# existing_cols = original_data.columns.intersection(u_df.columns)
+# if len(existing_cols)>0:
+#     original_data[existing_cols] = u_df[existing_cols]
+# else:## 没有写入。直接续写
+original_with_u = pd.concat([original_data,u_df],axis =1)
 original_with_u.to_csv("./data/DYG/DYG_u.csv",index=False)
 print(u_df.shape)
 

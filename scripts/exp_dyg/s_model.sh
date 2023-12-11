@@ -12,12 +12,12 @@ do
   --task_name long_term_forecast \
   --is_training 1 \
   --root_path ./data/DYG/ \
-  --data_path DYG.csv \
-  --model_id dyg_test \
+  --data_path DYG_u.csv \
+  --model_id dyg_test_simple \
   --model $model \
-  --data dyg \
+  --data DYG_u \
   --features S \
-  --target zs\
+  --target our\
   --seq_len 96 \
   --label_len 48 \
   --pred_len 96 \
@@ -33,7 +33,6 @@ do
   --des 'Exp' \
   --batch_size 32 \
   --itr 1\
-  --use_multi_gpu Ture\
   --devices '0,1,2,3,4,5,6,7'
     echo "Python script with model $model finished"
 done
