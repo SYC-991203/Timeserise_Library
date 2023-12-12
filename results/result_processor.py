@@ -23,10 +23,20 @@ for path in file_paths:
                 #print(data)
                 #df = pd.DataFrame()
             if "pred" in data_path or "true" in data_path: ## 目前这个里面有silde window的问题，细想一下好像不用解决，能对齐就行
+                ## 最终跑出来的顺序是INF0到error，最后一个feature是原始信号
                 num_features = data.shape[-1]
-                column_names = [f'Feature_{i+1}' for i in range(num_features)]
+                if num_features == 1:
+                    column_names = ["taegrt"]
+                else:
+                    column_names = [f'inf_{i}' for i in range(num_features-2)]
+                    column_names.append("error")
+                    column_names.append("original")
                 # 将三维数组转换为 DataFrame
                 df = pd.DataFrame(data.reshape(-1, num_features), columns=column_names)
+                # 前四列求和和最后一列数据对比
+                clos_to_sum = df.columns[:4]
+                if "our_exp" in data_path or "kla_exp" in data_path or "cer_exp" in data_path:
+                    df["sum_inf"] = df[clos_to_sum].sum(axis=1) ##分解信号求和
                 if "pred" in data_path:
                     df.to_csv(path+"/pred.csv",sep="\t")
                 else: df.to_csv(path+"/true.csv",sep="\t")
@@ -35,5 +45,5 @@ for path in file_paths:
            
             #df = pd.DataFrame(data)
 
-
+print("trans successfully")
 #data = np.load()

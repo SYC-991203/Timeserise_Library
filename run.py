@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser.add_argument('--data', type=str, required=True, default='DYG', help='dataset type')
     parser.add_argument('--root_path', type=str, default='./data/DYG/', help='root path of the data file')
     parser.add_argument('--data_path', type=str, default='DYG_u.csv', help='data file')
-    parser.add_argument('--features', type=str, default='',
+    parser.add_argument('--features', type=str, default='M',
                         help='forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate')
     parser.add_argument('--target', type=str, default='our', help='target feature in S or MS task')
     parser.add_argument('--freq', type=str, default='h',
@@ -54,9 +54,9 @@ if __name__ == '__main__':
     # model define
     parser.add_argument('--top_k', type=int, default=5, help='for TimesBlock')
     parser.add_argument('--num_kernels', type=int, default=6, help='for Inception')
-    parser.add_argument('--enc_in', type=int, default=1, help='encoder input size')
-    parser.add_argument('--dec_in', type=int, default=1, help='decoder input size')
-    parser.add_argument('--c_out', type=int, default=1, help='output size')
+    parser.add_argument('--enc_in', type=int, default=5, help='encoder input size')
+    parser.add_argument('--dec_in', type=int, default=5, help='decoder input size')
+    parser.add_argument('--c_out', type=int, default=5, help='output size')
     parser.add_argument('--d_model', type=int, default=512, help='dimension of model')
     parser.add_argument('--n_heads', type=int, default=8, help='num of heads')
     parser.add_argument('--e_layers', type=int, default=2, help='num of encoder layers')

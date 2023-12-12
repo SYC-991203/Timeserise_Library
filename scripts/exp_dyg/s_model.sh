@@ -33,6 +33,7 @@ do
   --des 'Exp' \
   --batch_size 32 \
   --itr 1\
-  --devices '0,1,2,3,4,5,6,7'
+  --devices '0,1,2,3,4,5,6,7'\
+  --use_multi_gpu 1
     echo "Python script with model $model finished"
 done

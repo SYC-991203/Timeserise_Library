@@ -4,7 +4,7 @@
 models=("Transformer" "iTransformer" "Autoformer" "Crossformer" "DLinear" "FEDformer" "Informer" "LightTS" \
 "PatchTST" "Pyraformer" "Reformer""FiLM" "MICN" "Koopa")
 target=$1 # target 取值只有 our cer kla 和 all
-model_id=our_exp_1211
+model_id=our_exp_1211 #model id 统一命名为变量名_实验（exp）or 测试代码（test）_DATE_M（多变量预测多变量）S（单-单）MS（多-单）
 if [ "$target" = "all" ]; then
     feature_dim=15
 else
@@ -42,7 +42,7 @@ do
         --itr 1 \
         --devices '0,1,2,3,4,5,6,7' \
         --target "$target"\
-        --use_multi_gpu 1
+        --use_multi_gpu
     
     exit_code=$?  # 获取Python脚本的退出码
     

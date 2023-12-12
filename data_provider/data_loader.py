@@ -19,6 +19,7 @@ class Dataset_DYG_u(Dataset):
                  target='OT', scale=True, timeenc=0, freq='h', seasonal_patterns=None):
         # size [seq_len, label_len, pred_len]
         # info
+        print("DYG_u_data_loader")
         if size == None:
             self.seq_len = 24 * 4 * 4
             self.label_len = 24 * 4
@@ -44,6 +45,7 @@ class Dataset_DYG_u(Dataset):
 
     def __read_data__(self):
         self.scaler = StandardScaler()
+        #self.scaler = None #不归一
         df_raw = pd.read_csv(os.path.join(self.root_path,
                                           self.data_path))
 
@@ -78,7 +80,8 @@ class Dataset_DYG_u(Dataset):
         elif self.features == 'S':
             df_data = df_raw[[self.target]]
 
-        if self.scale:
+        if self.scale and self.scale != None:
+            # data = df_data.values
             train_data = df_data[border1s[0]:border2s[0]]
             self.scaler.fit(train_data.values)
             data = self.scaler.transform(df_data.values)
