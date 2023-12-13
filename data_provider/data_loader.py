@@ -53,9 +53,14 @@ class Dataset_DYG_u(Dataset):
         df_raw.columns: ['date', ...(other features), target feature]
         '''
         cols = list(df_raw.columns)
-        cols.remove(self.target)
-        cols.remove('date')
-        df_raw = df_raw[['date'] + cols + [self.target]]
+        if "imf" in self.target:
+           cols = [col for col in cols if self.target  in col] # 如果单纯跑分解的话，就把分解信号拿出来单独跑
+           df_raw = df_raw[['date']+cols]
+           #print(cols)
+        else:
+            cols.remove(self.target)
+            cols.remove('date')
+            df_raw = df_raw[['date'] + cols + [self.target]] ## 为了实现重排序，这也解释了为什么our放在最后
         num_train = int(len(df_raw) * 0.7)
         num_test = int(len(df_raw) * 0.2)
         num_vali = len(df_raw) - num_train - num_test
@@ -67,16 +72,20 @@ class Dataset_DYG_u(Dataset):
         if self.features == 'M' or self.features == 'MS':
             target_list_all = ["our","cer","kla","u_our_imf0","u_our_imf1","u_our_imf2","u_cer_imf0","u_cer_imf1",\
                 "u_cer_imf2","u_kla_imf0","u_kla_imf1","u_kla_imf2","u_our_error","u_cer_error","u_kla_error"]
-            target_list_our = ["our","u_our_imf0","u_our_imf1","u_our_imf2","u_our_error"]
-            target_list_cer = ["cer","u_cer_imf0","u_cer_imf1","u_cer_imf2","u_cer_error"]
-            target_list_kla = ["kla","u_kla_imf0","u_kla_imf1","u_kla_imf2","u_kla_error"]
+            target_list_our = ["our","u_our_imf0","u_our_imf1","u_our_imf2","u_our_imf_error"]
+            target_list_cer = ["cer","u_cer_imf0","u_cer_imf1","u_cer_imf2","u_cer_imf_error"]
+            target_list_kla = ["kla","u_kla_imf0","u_kla_imf1","u_kla_imf2","u_kla_imf_error"]
             column_names = df_raw.columns.to_list()
             if self.target == "our" or self.target == "cer" or self.target == "kla": ## 对于our或者cer或者kla原始信号和分解信号全计算
                 target_list = [col for col in column_names if self.target in col]
             if self.target =="all":
                 target_list = target_list_all
+            if self.target == "our_imf" or self.target == "cer_imf" or self.target == "kla_imf":
+                target_list = [col for col in column_names if self.target in col]
+            
             #cols_data = df_raw.columns[1:]
             df_data = df_raw[target_list]
+            print("final",list(df_data.columns))
         elif self.features == 'S':
             df_data = df_raw[[self.target]]
 
