@@ -1,0 +1,73 @@
+model_name=PatchTST
+python -u run.py \
+  --task_name long_term_forecast \
+  --is_training 1 \
+  --root_path ./data/DYG/ \
+  --data_path DYG_u.csv \
+  --model_id our_imf_exp_1212_M \
+  --model $model_name \
+  --data DYG_u \
+  --features M \
+  --seq_len 96 \
+  --label_len 48 \
+  --pred_len 96 \
+  --e_layers 3 \
+  --d_layers 1 \
+  --factor 3 \
+  --enc_in 4 \
+  --dec_in 4 \
+  --c_out 4 \
+  --des 'Exp' \
+  --n_heads 16 \
+  --batch_size 32 \
+  --itr 1\
+  --target "our_imf"
+
+  python -u run.py \
+  --task_name long_term_forecast \
+  --is_training 1 \
+  --root_path ./data/DYG/ \
+  --data_path DYG_u.csv \
+  --model_id cer_imf_exp_1212_M \
+  --model $model_name \
+  --data DYG_u \
+  --features M \
+  --seq_len 96 \
+  --label_len 48 \
+  --pred_len 96 \
+  --e_layers 3 \
+  --d_layers 1 \
+  --factor 3 \
+  --enc_in 4 \
+  --dec_in 4 \
+  --c_out 4\
+  --des 'Exp' \
+  --n_heads 16 \
+  --batch_size 32 \
+  --itr 1\
+  --target "cer_imf"
+
+  python -u run.py \
+  --task_name long_term_forecast \
+  --is_training 1 \
+  --root_path ./data/DYG/ \
+  --data_path DYG_u.csv \
+  --model_id kla_imf_exp_1212_M \
+  --model $model_name \
+  --data DYG_u \
+  --features M \
+  --seq_len 96 \
+  --label_len 48 \
+  --pred_len 96 \
+  --e_layers 3 \
+  --d_layers 1 \
+  --factor 3 \
+  --enc_in 4 \
+  --dec_in 4 \
+  --c_out 4 \
+  --des 'Exp' \
+  --n_heads 16 \
+  --batch_size 32 \
+  --itr 1\
+  --target "kla_imf"
+
