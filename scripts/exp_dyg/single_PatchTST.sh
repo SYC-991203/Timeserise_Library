@@ -3,8 +3,8 @@ python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
   --root_path ./data/DYG/ \
-  --data_path DYG_u.csv \
-  --model_id our_exp_1212_S \
+  --data_path DYG_vmd_3.csv \
+  --model_id our_exp_single_S \
   --model $model_name \
   --data DYG_u \
   --features S \
@@ -27,8 +27,8 @@ python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
   --root_path ./data/DYG/ \
-  --data_path DYG_u.csv \
-  --model_id cer_exp_1212_S \
+  --data_path DYG_vmd_3.csv \
+  --model_id cer_exp_single_S \
   --model $model_name \
   --data DYG_u \
   --features S \
@@ -51,8 +51,8 @@ python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
   --root_path ./data/DYG/ \
-  --data_path DYG_u.csv \
-  --model_id kla_exp_1212_S \
+  --data_path DYG_vmd_3.csv \
+  --model_id kla_exp_single_S \
   --model $model_name \
   --data DYG_u \
   --features S \

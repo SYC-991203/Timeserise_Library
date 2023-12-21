@@ -16,7 +16,7 @@ do
         --task_name long_term_forecast \
         --is_training 1 \
         --root_path ./data/DYG/ \
-        --data_path DYG_u.csv \
+        --data_path DYG_vmd_3.csv \
         --model_id $model_id \
         --model $model \
         --data DYG_u \
