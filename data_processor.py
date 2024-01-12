@@ -1,8 +1,11 @@
 import numpy as np
+import matplotlib
+matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 from vmdpy import VMD
 import pandas as pd
 import os
+
 cur_dir = os.getcwd() ##debug 路径和run路径不一样
 print("cur_dir:",cur_dir)
 # read dyg_pd
@@ -25,7 +28,7 @@ data_list = [our,cer,kla]
 # a值越大，各IMF分量的带宽越小，过小的带宽是使得被分解的信号中某些信号丢失该系数常见取值范围为1000~3000
 alpha=4000
 tau=0 # tau 噪声容限，即允许重构后的信号与原始信号有差别。
-K=2# K 分解模态（IMF）个数
+K=3# K 分解模态（IMF）个数
 DC=0 # DC 若为0则让第一个IMF为直流分量/趋势向量
 init=1 # init 指每个IMF的中心频率进行初始化。当初始化为1时，进行均匀初始化。
 tol=1e-7 # 控制误差大小常量，决定精度与迭代次数

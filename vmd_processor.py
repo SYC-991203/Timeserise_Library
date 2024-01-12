@@ -74,7 +74,7 @@ def Auto_VMD_main(signal,Fs,draw=1,maxK=10):
     
     #用最佳K值分解信号
     IMFs, _, _ = VMD(signal, alpha, tau, idx, DC, init, tol)
-    print(idx)
+    print(f"signal:{signal.name},idx:{idx}")
     #可视化寻优过程与最终结果
     if draw==1:
         plt.figure()
@@ -157,23 +157,7 @@ if __name__=='__main__':
         our = original_data['our']
         cer = original_data['cer']
         kla = original_data['kla']
-        #仿真信号1
-        # Fs=6000   #采样频率
-        # t = np.arange(0, 1.0, 1.0 / Fs)
-        # signal=np.multiply(np.sin(2*np.pi*100*t),(np.cos(2*np.pi*1000*t)+np.cos(2*np.pi*1500*t)+np.cos(2*np.pi*2000*t)))
         
-        # #仿真信号2
-        # Fs=1000   #采样频率
-        # t = np.arange(0, 1.0, 1.0 / Fs)
-        # f1,f2,f3 = 100,200,300
-        # signal = np.piecewise(t, [t < 1, t < 0.6, t < 0.3],
-        #                     [lambda t: np.sin(2 * np.pi * f1 * t), lambda t: np.sin(2 * np.pi * f2 * t),
-        #                       lambda t: np.sin(2 * np.pi * f3 * t)])    
-        # #仿真信号3
-        # Fs=1000   #采样频率
-        # t = np.arange(0, 1.0, 1.0 / Fs)
-        # f1,f2,f3 = 100,200,300
-        # signal = 3*np.sin(2*np.pi*f1*t)+6*np.sin(2*np.pi*f2*t)+5*np.sin(2*np.pi*f3*t) 
         result_u_list =[]
         error_our_list = []
         error_cer_list = []

@@ -1,10 +1,11 @@
 model_name=PatchTST
+vmd_dim=2
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
   --root_path ./data/DYG/ \
-  --data_path DYG_vmd_4.csv \
-  --model_id our_imf_exp_4_M \
+  --data_path DYG_vmd_${vmd_dim}.csv \
+  --model_id our_imf_exp_${vmd_dim}_M \
   --model $model_name \
   --data DYG_u \
   --features M \
@@ -27,8 +28,8 @@ python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
   --root_path ./data/DYG/ \
-  --data_path DYG_vmd_4.csv \
-  --model_id cer_imf_exp_4_M \
+  --data_path DYG_vmd_${vmd_dim}.csv \
+  --model_id cer_imf_exp_${vmd_dim}_M \
   --model $model_name \
   --data DYG_u \
   --features M \
@@ -51,8 +52,8 @@ python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
   --root_path ./data/DYG/ \
-  --data_path DYG_vmd_4.csv \
-  --model_id kla_imf_exp_4_M \
+  --data_path DYG_vmd_${vmd_dim}.csv \
+  --model_id kla_imf_exp_${vmd_dim}_M \
   --model $model_name \
   --data DYG_u \
   --features M \
