@@ -1,5 +1,5 @@
 model_name=PatchTST
-vmd_dim=2
+vmd_dim=6
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
@@ -15,9 +15,9 @@ python -u run.py \
   --e_layers 3 \
   --d_layers 1 \
   --factor 3 \
-  --enc_in 5 \
-  --dec_in 5 \
-  --c_out 5 \
+  --enc_in ${vmd_dim+1} \
+  --dec_in ${vmd_dim+1} \
+  --c_out ${vmd_dim+1} \
   --des 'Exp' \
   --n_heads 16 \
   --batch_size 32 \
@@ -39,9 +39,9 @@ python -u run.py \
   --e_layers 3 \
   --d_layers 1 \
   --factor 3 \
-  --enc_in 5 \
-  --dec_in 5 \
-  --c_out 5 \
+  --enc_in ${vmd_dim+1}  \
+  --dec_in ${vmd_dim+1}  \
+  --c_out ${vmd_dim+1}  \
   --des 'Exp' \
   --n_heads 16 \
   --batch_size 32 \
@@ -63,9 +63,9 @@ python -u run.py \
   --e_layers 3 \
   --d_layers 1 \
   --factor 3 \
-  --enc_in 5 \
-  --dec_in 5 \
-  --c_out 5 \
+  --enc_in ${vmd_dim+1}  \
+  --dec_in ${vmd_dim+1}  \
+  --c_out ${vmd_dim+1}  \
   --des 'Exp' \
   --n_heads 16 \
   --batch_size 32 \
