@@ -11,14 +11,23 @@ from revin.revin_torch import RevIN
 
 Device = "cuda" if torch.cuda.is_available() else "cpu"
 lambda_value = 1e-2
-exp_itme = "ht_6" ## 修改这个就行了 就修改成项目_IMF个数 其他什么都不用改了
+exp_itme = "nd_6" ## 修改这个就行了 就修改成项目_IMF个数 其他什么都不用改了
 type_names_list = ["jn","nd","ht"]
 
 tensorset_dic={
     "jn_3":0,
-    "nd_4":1,
-    "ht_6":2,
+    "jn_4":1,
+    "jn_5":2,
+    "jn_6":3,
+    "nd_3":4,
+    "nd_4":5,
+    "nd_5":6,
+    "ht_3":7,
+    "ht_4":8,
+    "ht_5":9,
+    "ht_6":10,
 }
+
 type_key = exp_itme.split("_",1)[0]
 imf_nums = int(exp_itme.split("_",1)[1])
 
@@ -40,11 +49,11 @@ class SignalReconstructor(nn.Module):
         )
 
         self.spatial_attention = nn.Sequential(
-            nn.Conv2d(in_channels, int(in_channels / rate), kernel_size=7, padding=3),
-            nn.BatchNorm2d(int(in_channels / rate)),
+            nn.Conv1d(in_channels, int(in_channels / rate), kernel_size=7, padding=3),
+            nn.BatchNorm1d(int(in_channels / rate)),
             nn.ReLU(inplace=True),
-            nn.Conv2d(int(in_channels / rate), out_channels, kernel_size=7, padding=3),
-            nn.BatchNorm2d(out_channels)
+            nn.Conv1d(int(in_channels / rate), out_channels, kernel_size=7, padding=3),
+            nn.BatchNorm1d(out_channels)
         )
 
     def forward(self, pred, imfs):
@@ -60,6 +69,7 @@ class SignalReconstructor(nn.Module):
         x_channel_att = x_att_permute.permute(0, 3, 1, 2)
 
         x = x * x_channel_att
+        x = x.squeeze(-1)
 
         x_spatial_att = self.spatial_attention(x).sigmoid()
         out = x * x_spatial_att
@@ -80,7 +90,7 @@ def get_all_data_from_loader(dataloader):
     all_data = list(zip(*[batch for batch in dataloader]))
     all_data = [torch.cat(data, dim=0) for data in all_data]
     return all_data
-def load_data(type_name:str,num_imf:int,file_path="/home/qsmx/Data/dyg_sgmd_snr_pred.xlsx")->TensorDataset:
+def load_data(type_name:str,num_imf:int,file_path="/home/qsmx/Data/DYG_sgc_pred.xlsx")->TensorDataset:
     try:
         df =pd.read_excel(file_path,sheet_name=f"{type_name}_{num_imf}")
         data_dic = {}
