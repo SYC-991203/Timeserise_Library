@@ -10,7 +10,7 @@ from torch.utils.data import TensorDataset, DataLoader, random_split
 
 Device = "cuda" if torch.cuda.is_available() else "cpu"
 lambda_value = 1e-2
-exp_itme = "our_4" ## 修改这个就行了
+exp_itme = "our_2" ## 修改这个就行了 就修改成项目_IMF个数 其他什么都不用改了
 type_names_list = ["cer","kla","our"]
 
 tensorset_dic={
@@ -44,19 +44,23 @@ class SignalReconstructor(nn.Module):
         super(SignalReconstructor, self).__init__()
         # 定义网络层
         self.fc1 = nn.Linear(input_dim, hidden_dim)
+        self.bn1 = nn.BatchNorm1d(hidden_dim)
         self.relu = nn.ReLU()  # 从5个信号到5个权重
-        self.fc2 = nn.Linear(hidden_dim,out_dim) # 确保输出的所有权重和为1
+        self.fc2 = nn.Linear(hidden_dim,out_dim) # 确保输出的所有权重和为1\
+        
 
     def forward(self, pred, imfs,error,K):
         # 将输入信号拼接
 
         x = torch.cat([pred]+imfs+[error], dim=1)
         # 通过网络获取权重
-        x = self.relu(self.fc1(x))
+        x = self.fc1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
         weights = self.fc2(x)
         weights[:,0] = torch.sigmoid(weights[:,0])
         weights[:,-1] = torch.sigmoid(weights[:,-1])
-        other_weights = F.softmax(weights[:,1:-1],dim = 1 )*K ## K是imf个数-1
+        other_weights = F.softmax(weights[:,1:-1],dim = 1 )*K*0.4 ## K是imf个数-1
         weights = torch.cat((weights[:, 0:1], other_weights, weights[:, -1:]), dim=1)     
         # 计算重构信号
         reconstructed_signal = weights[:, 0] * pred
@@ -70,7 +74,7 @@ def get_all_data_from_loader(dataloader):
     all_data = list(zip(*[batch for batch in dataloader]))
     all_data = [torch.cat(data, dim=0) for data in all_data]
     return all_data
-def load_data(type_name:str,num_imf:int,file_path="./data/SignalRes/dyg_vmd_exp.xlsx")->TensorDataset:
+def load_data(type_name:str,num_imf:int,file_path="./data/SignalRes/dyg_vmd_exp_2_6.xlsx")->TensorDataset:
     try:
         df =pd.read_excel(file_path,sheet_name=f"{type_name}_{num_imf}")
         data_dic = {}
@@ -171,8 +175,9 @@ test_true = test_data_tensor[:,-1].unsqueeze(1)
 # 检查最终张量的形状
 print(test_data_tensor.shape) 
 ## 人工调整权重值
-# weight = [0,0.33,0.33,0.33,0]
+# weight = [0.0000, 0.3300, 0.3300, 0.3300, 0.0000]
 # weight = torch.tensor(weight).view(1,input_dim).to(device=Device)
+print(weight)
 #concatenated_data = torch.cat((s_pred,kla_imf0, kla_imf1, kla_imf2, kla_error), dim=1)
 re_signal = torch.matmul(test_feature,weight.t()).view(-1,1)
 

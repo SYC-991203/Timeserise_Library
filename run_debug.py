@@ -1,0 +1,48 @@
+import subprocess
+
+def run_model(model, data, features, seq_len, label_len, pred_len, e_layers, d_layers, \
+              factor, enc_in, dec_in, c_out, d_model, d_ff, top_k, des, batch_size, itr, \
+                devices, target):
+    command = [
+        'python', '-u', 'run.py',
+        '--task_name', 'long_term_forecast',
+        '--is_training', '1',
+        '--root_path', './data/DYG/',
+        '--data_path', data,
+        '--model_id', 'Third_exp_single_S',
+        '--model', model,
+        '--data', 'DYG_vmd',
+        '--features', features,
+        '--seq_len', str(seq_len),
+        '--label_len', str(label_len),
+        '--pred_len', str(pred_len),
+        '--e_layers', str(e_layers),
+        '--d_layers', str(d_layers),
+        '--factor', str(factor),
+        '--enc_in', str(enc_in),
+        '--dec_in', str(dec_in),
+        '--c_out', str(c_out),
+        '--d_model', str(d_model),
+        '--d_ff', str(d_ff),
+        '--top_k', str(top_k),
+        '--des', des,
+        '--batch_size', str(batch_size),
+        '--itr', str(itr),
+        '--devices', devices,
+        '--target', target
+    ]
+    
+    # 运行命令行
+    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    
+    # 检查结果
+    if result.returncode == 0:
+        print("命令执行成功，输出：")
+        print(result.stdout)
+    else:
+        print("命令执行失败，错误：")
+        print(result.stderr)
+
+
+run_model('Transformer', 'DYG_2-1_data.csv', 'S', 96, 48, 96, 2, 1, 3, 1, 1, 1, 256, 512, 5, \
+          des='Exp', batch_size=32, itr=1, devices='0,1,2,3', target='nn')

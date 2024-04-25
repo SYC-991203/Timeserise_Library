@@ -1,6 +1,9 @@
 #!/bin/bash
-
+# 要调整pred-l 做短中长测试 之前全部的实验的pred-l都是96 要补充192 336 720
 # 模型列表
+
+# feature 取s 下单变量预测，多种模型的bash脚本
+
 models=("Transformer" "iTransformer" "Autoformer" "Crossformer" "DLinear" "FEDformer" "Informer" "LightTS" \
 "PatchTST" "Pyraformer" "Reformer""FiLM" "MICN" "Koopa")
 target=$1 # target 取值只有 our cer kla 和 all
@@ -20,14 +23,14 @@ do
         --task_name long_term_forecast \
         --is_training 1 \
         --root_path ./data/DYG/ \
-        --data_path DYG_vmd_3.csv \
+        --data_path DYG_2-1_data.csv \
         --model_id $model_id \
         --model $model \
         --data DYG_u \
         --features M \
         --seq_len 96 \
         --label_len 48 \
-        --pred_len 96 \
+        --pred_len 192 \
         --e_layers 2 \
         --d_layers 1 \
         --factor 3 \
@@ -40,7 +43,7 @@ do
         --des 'Exp' \
         --batch_size 32 \
         --itr 1 \
-        --devices '0,1,2,3,4,5,6,7' \
+        --devices '0,1,2,3' \
         --target "$target"\
         --use_multi_gpu
     
