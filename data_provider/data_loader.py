@@ -11,15 +11,17 @@ from data_provider.m4 import M4Dataset, M4Meta
 from data_provider.uea import subsample, interpolate_missing, Normalizer
 from sktime.datasets import load_from_tsfile_to_dataframe
 import warnings
+import json
 
 warnings.filterwarnings('ignore')
-class Dataset_DYG_u(Dataset):
+
+class Dataset_DYG_OneSTL(Dataset):
     def __init__(self, root_path, flag='train', size=None,
-                 features='S', data_path='DYG_u.csv',
-                 target='OT', scale=True, timeenc=0, freq='h', seasonal_patterns=None):
+                 features='S', data_path='DYG_2-1_data.csv',
+                 target='jn', scale=True, timeenc=0, freq='h', seasonal_patterns=None):
         # size [seq_len, label_len, pred_len]
         # info
-        print("DYG_u_data_loader")
+        print("DYG_Onestl_data_loader")
         if size == None:
             self.seq_len = 24 * 4 * 4
             self.label_len = 24 * 4
@@ -45,7 +47,6 @@ class Dataset_DYG_u(Dataset):
 
     def __read_data__(self):
         self.scaler = StandardScaler()
-        #self.scaler = None #不归一
         df_raw = pd.read_csv(os.path.join(self.root_path,
                                           self.data_path))
 
@@ -53,14 +54,10 @@ class Dataset_DYG_u(Dataset):
         df_raw.columns: ['date', ...(other features), target feature]
         '''
         cols = list(df_raw.columns)
-        if "imf" in self.target:
-           cols = [col for col in cols if self.target  in col] # 如果单纯跑分解的话，就把分解信号拿出来单独跑
-           df_raw = df_raw[['date']+cols]
-           #print(cols)
-        else:
-            cols.remove(self.target)
-            cols.remove('date')
-            df_raw = df_raw[['date'] + cols + [self.target]] ## 为了实现重排序，这也解释了为什么our放在最后
+        # print(cols)
+        cols.remove(self.target)
+        cols.remove('date')
+        df_raw = df_raw[['date'] + cols + [self.target]]
         num_train = int(len(df_raw) * 0.7)
         num_test = int(len(df_raw) * 0.2)
         num_vali = len(df_raw) - num_train - num_test
@@ -70,27 +67,25 @@ class Dataset_DYG_u(Dataset):
         border2 = border2s[self.set_type]
 
         if self.features == 'M' or self.features == 'MS':
-            target_list_all = ["our","cer","kla","u_our_imf0","u_our_imf1","u_our_imf2","u_cer_imf0","u_cer_imf1",\
-                "u_cer_imf2","u_kla_imf0","u_kla_imf1","u_kla_imf2","u_our_error","u_cer_error","u_kla_error"]
-            target_list_our = ["our","u_our_imf0","u_our_imf1","u_our_imf2","u_our_imf_error"]
-            target_list_cer = ["cer","u_cer_imf0","u_cer_imf1","u_cer_imf2","u_cer_imf_error"]
-            target_list_kla = ["kla","u_kla_imf0","u_kla_imf1","u_kla_imf2","u_kla_imf_error"]
+            target_list_all = ["jn_trend","jn_seasonal","jn_residual","nd_trend","nd_seasonal",\
+                "nd_residual","hx_trend","hx_seasonal","hx_residual"]
+
             column_names = df_raw.columns.to_list()
-            if self.target == "our" or self.target == "cer" or self.target == "kla": ## 对于our或者cer或者kla原始信号和分解信号全计算
+            target_list = target_list_all
+            if self.target == "jn" or self.target == "nd" or self.target == "hx": ## 对于our或者cer或者kla原始信号和分解信号全计算
                 target_list = [col for col in column_names if self.target in col]
             if self.target =="all":
                 target_list = target_list_all
-            if self.target == "our_imf" or self.target == "cer_imf" or self.target == "kla_imf":
-                target_list = [col for col in column_names if self.target in col]
+        
             
             #cols_data = df_raw.columns[1:]
             df_data = df_raw[target_list]
-            print("final",list(df_data.columns))
+
+            print(df_data.columns)
         elif self.features == 'S':
             df_data = df_raw[[self.target]]
 
-        if self.scale and self.scale != None:
-            # data = df_data.values
+        if self.scale:
             train_data = df_data[border1s[0]:border2s[0]]
             self.scaler.fit(train_data.values)
             data = self.scaler.transform(df_data.values)
@@ -132,12 +127,15 @@ class Dataset_DYG_u(Dataset):
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)
 
-class Dataset_DYG_day(Dataset):## old dyg data_set
+
+
+class Dataset_DYG_okc_OneSTL(Dataset):
     def __init__(self, root_path, flag='train', size=None,
-                 features='S', data_path='DYG.csv',
-                 target='zs', scale=True, timeenc=0, freq='d', seasonal_patterns=None):
+                 features='S', data_path='DYG_Oneshot.csv',
+                 target='our', scale=True, timeenc=0, freq='h', seasonal_patterns=None):
         # size [seq_len, label_len, pred_len]
         # info
+        print("DYG_Onestl_data_loader")
         if size == None:
             self.seq_len = 24 * 4 * 4
             self.label_len = 24 * 4
@@ -165,18 +163,265 @@ class Dataset_DYG_day(Dataset):## old dyg data_set
         self.scaler = StandardScaler()
         df_raw = pd.read_csv(os.path.join(self.root_path,
                                           self.data_path))
-        print(df_raw.shape)
 
-        border1s = [0, 12 * 30 * 24 - self.seq_len, 12 * 30 * 24 + 4 * 30 * 24 - self.seq_len]
-        border2s = [12 * 30 * 24, 12 * 30 * 24 + 4 * 30 * 24, 12 * 30 * 24 + 8 * 30 * 24]
-        border1 = border1s[self.set_type] ##border1[0],border2[0]表示训练的起始位置和结束位置
+        '''
+        df_raw.columns: ['date', ...(other features), target feature]
+        '''
+        cols = list(df_raw.columns)
+        cols.remove(self.target)
+        cols.remove('date')
+        df_raw = df_raw[['date'] + cols + [self.target]]
+        num_train = int(len(df_raw) * 0.7)
+        num_test = int(len(df_raw) * 0.2)
+        num_vali = len(df_raw) - num_train - num_test
+        border1s = [0, num_train - self.seq_len, len(df_raw) - num_test - self.seq_len]
+        border2s = [num_train, num_train + num_vali, len(df_raw)]
+        border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
 
         if self.features == 'M' or self.features == 'MS':
-            cols_data = df_raw.columns[1:]
-            df_data = df_raw[cols_data]## 多元时序变量
+            target_list_all = ["our_trend","our_seasonal","our_residual","cer_trend","cer_seasonal",\
+                "cer_residual","kla_trend","kla_seasonal","kla_residual"]
+
+            column_names = df_raw.columns.to_list()
+            target_list = target_list_all
+            if self.target == "our" or self.target == "cer" or self.target == "kla": ## 对于our或者cer或者kla原始信号和分解信号全计算
+                target_list = [col for col in column_names if self.target in col]
+            if self.target =="all":
+                target_list = target_list_all
+        
+            
+            #cols_data = df_raw.columns[1:]
+            df_data = df_raw[target_list]
+
+            print(df_data.columns)
         elif self.features == 'S':
-            df_data = df_raw[[self.target]]## 单元时序变量
+            df_data = df_raw[[self.target]]
+
+        if self.scale:
+            train_data = df_data[border1s[0]:border2s[0]]
+            self.scaler.fit(train_data.values)
+            data = self.scaler.transform(df_data.values)
+        else:
+            data = df_data.values
+
+        df_stamp = df_raw[['date']][border1:border2]
+        df_stamp['date'] = pd.to_datetime(df_stamp.date)
+        if self.timeenc == 0:
+            df_stamp['month'] = df_stamp.date.apply(lambda row: row.month, 1)
+            df_stamp['day'] = df_stamp.date.apply(lambda row: row.day, 1)
+            df_stamp['weekday'] = df_stamp.date.apply(lambda row: row.weekday(), 1)
+            df_stamp['hour'] = df_stamp.date.apply(lambda row: row.hour, 1)
+            data_stamp = df_stamp.drop(['date'], 1).values
+        elif self.timeenc == 1:
+            data_stamp = time_features(pd.to_datetime(df_stamp['date'].values), freq=self.freq)
+            data_stamp = data_stamp.transpose(1, 0)
+
+        self.data_x = data[border1:border2]
+        self.data_y = data[border1:border2]
+        self.data_stamp = data_stamp
+
+    def __getitem__(self, index):
+        s_begin = index
+        s_end = s_begin + self.seq_len
+        r_begin = s_end - self.label_len
+        r_end = r_begin + self.label_len + self.pred_len
+
+        seq_x = self.data_x[s_begin:s_end]
+        seq_y = self.data_y[r_begin:r_end]
+        seq_x_mark = self.data_stamp[s_begin:s_end]
+        seq_y_mark = self.data_stamp[r_begin:r_end]
+
+        return seq_x, seq_y, seq_x_mark, seq_y_mark
+
+    def __len__(self):
+        return len(self.data_x) - self.seq_len - self.pred_len + 1
+
+    def inverse_transform(self, data):
+        return self.scaler.inverse_transform(data)
+    
+class Dataset_DYG_u(Dataset):
+    def __init__(self, root_path, flag='train', size=None,
+                 features='S', data_path='DYG_clean.csv',
+                 target='OT', scale=True, timeenc=0, freq='h', seasonal_patterns=None,cut_off=1000):
+        # size [seq_len, label_len, pred_len]
+        # info
+        print("DYG_u_data_loader")
+        if size == None:
+            self.seq_len = 24 * 4 * 4
+            self.label_len = 24 * 4
+            self.pred_len = 24 * 4
+        else:
+            self.seq_len = size[0]
+            self.label_len = size[1]
+            self.pred_len = size[2]
+        # init
+        assert flag in ['train', 'test', 'val']
+        type_map = {'train': 0, 'val': 1, 'test': 2}
+        self.set_type = type_map[flag]
+
+        self.features = features
+        self.target = target
+        self.scale = scale
+        self.timeenc = timeenc
+        self.freq = freq
+
+        self.root_path = root_path
+        self.data_path = data_path
+        self.cut_off = cut_off
+        self.__read_data__()
+
+    def __read_data__(self):
+        self.scaler = StandardScaler()
+        #self.scaler = None #不归一
+        df_raw = pd.read_csv(os.path.join(self.root_path,
+                                          self.data_path))
+
+        '''
+        df_raw.columns: ['date', ...(other features), target feature]
+        '''
+        cols = list(df_raw.columns)
+        if "imf" in self.target:
+           cols = [col for col in cols if self.target  in col] # 如果单纯跑分解的话，就把分解信号拿出来单独跑
+           df_raw = df_raw[['date']+cols]
+           #print(cols)
+        else:
+            cols.remove(self.target)
+            cols.remove('date')
+            df_raw = df_raw[['date'] + cols + [self.target]] ## 为了实现重排序，这也解释了为什么our放在最后
+        ### 增加截断
+        if  self.cut_off!=None:
+            df_raw = df_raw[self.cut_off-1:]
+            print("cut_off:",df_raw.shape)
+
+        num_train = int(len(df_raw) * 0.7)
+        num_test = int(len(df_raw) * 0.2)
+        num_vali = len(df_raw) - num_train - num_test
+        border1s = [0, num_train - self.seq_len, len(df_raw) - num_test - self.seq_len]
+        border2s = [num_train, num_train + num_vali, len(df_raw)]
+        border1 = border1s[self.set_type]
+        border2 = border2s[self.set_type]
+
+        if self.features == 'M' or self.features == 'MS':
+            target_list_all = ["our","cer","kla","u_our_imf0","u_our_imf1","u_our_imf2","u_cer_imf0","u_cer_imf1",\
+                "u_cer_imf2","u_kla_imf0","u_kla_imf1","u_kla_imf2","u_our_error","u_cer_error","u_kla_error"]
+            target_list_our = ["our","u_our_imf0","u_our_imf1","u_our_imf2","u_our_imf_error"]
+            target_list_cer = ["cer","u_cer_imf0","u_cer_imf1","u_cer_imf2","u_cer_imf_error"]
+            target_list_kla = ["kla","u_kla_imf0","u_kla_imf1","u_kla_imf2","u_kla_imf_error"]
+            column_names = df_raw.columns.to_list()
+            if self.target == "our" or self.target == "cer" or self.target == "kla": ## 对于our或者cer或者kla原始信号和分解信号全计算
+                target_list = [col for col in column_names if self.target in col]
+            if self.target =="all":
+                target_list = target_list_all
+            if self.target == "our_imf" or self.target == "cer_imf" or self.target == "kla_imf":
+                target_list = [col for col in column_names if self.target in col]
+            
+            #cols_data = df_raw.columns[1:]
+            df_data = df_raw[target_list]
+            print("final",list(df_data.columns))
+        elif self.features == 'S':
+            df_data = df_raw[[self.target]]
+
+        if self.scale and self.scale != None:
+            # data = df_data.values
+            train_data = df_data[border1s[0]:border2s[0]]
+            self.scaler.fit(train_data.values)
+            data = self.scaler.transform(df_data.values)
+        else:
+            data = df_data.values
+
+
+## 处理时间戳
+        df_stamp = df_raw[['date']][border1:border2]
+        df_stamp['date'] = pd.to_datetime(df_stamp.date)
+        if self.timeenc == 0:
+            df_stamp['month'] = df_stamp.date.apply(lambda row: row.month, 1)
+            df_stamp['day'] = df_stamp.date.apply(lambda row: row.day, 1)
+            df_stamp['weekday'] = df_stamp.date.apply(lambda row: row.weekday(), 1)
+            df_stamp['hour'] = df_stamp.date.apply(lambda row: row.hour, 1)
+            data_stamp = df_stamp.drop(['date'], 1).values
+        elif self.timeenc == 1:
+            data_stamp = time_features(pd.to_datetime(df_stamp['date'].values), freq=self.freq)
+            data_stamp = data_stamp.transpose(1, 0)
+
+        self.data_x = data[border1:border2]
+        self.data_y = data[border1:border2]
+        self.data_stamp = data_stamp
+
+    def __getitem__(self, index):
+        s_begin = index
+        s_end = s_begin + self.seq_len
+        r_begin = s_end - self.label_len
+        r_end = r_begin + self.label_len + self.pred_len
+
+        seq_x = self.data_x[s_begin:s_end]
+        seq_y = self.data_y[r_begin:r_end]
+        seq_x_mark = self.data_stamp[s_begin:s_end]
+        seq_y_mark = self.data_stamp[r_begin:r_end]
+
+        return seq_x, seq_y, seq_x_mark, seq_y_mark
+
+    def __len__(self):
+        return len(self.data_x) - self.seq_len - self.pred_len + 1
+
+    def inverse_transform(self, data):
+        return self.scaler.inverse_transform(data)
+
+class Dataset_DYG_base(Dataset):## old dyg data_set
+    def __init__(self, root_path, flag='train', size=None,
+                 features='S', data_path='DYG_2_data.csv',
+                 target='zs', scale=True, timeenc=0, freq='h', seasonal_patterns=None,cut_off=1000):
+        # size [seq_len, label_len, pred_len]
+        # info
+        print("DYG_base")
+        if size == None:
+            self.seq_len = 24 * 4 * 4
+            self.label_len = 24 * 4
+            self.pred_len = 24 * 4
+        else:
+            self.seq_len = size[0]
+            self.label_len = size[1]
+            self.pred_len = size[2]
+        # init
+        assert flag in ['train', 'test', 'val']
+        type_map = {'train': 0, 'val': 1, 'test': 2}
+        self.set_type = type_map[flag]
+
+        self.features = features
+        self.target = target
+        self.scale = scale
+        self.timeenc = timeenc
+        self.freq = freq
+        self.cut_off = cut_off
+
+        self.root_path = root_path
+        self.data_path = data_path
+        self.__read_data__()
+
+    def __read_data__(self):
+        self.scaler = StandardScaler()
+        df_raw = pd.read_csv(os.path.join(self.root_path,
+                                          self.data_path))
+        print(df_raw.shape)
+        if  self.cut_off!=None:
+            df_raw = df_raw[self.cut_off-1:]
+            print("cut_off:",df_raw.shape)
+
+
+        num_train = int(len(df_raw) * 0.7)
+        num_test = int(len(df_raw) * 0.2)
+        num_vali = len(df_raw) - num_train - num_test
+        border1s = [0, num_train - self.seq_len, len(df_raw) - num_test - self.seq_len]
+        border2s = [num_train, num_train + num_vali, len(df_raw)]
+        border1 = border1s[self.set_type]
+        border2 = border2s[self.set_type]
+
+
+        if self.features == 'M' or self.features == 'MS':
+            cols_data = df_raw.columns[1:]
+            df_data = df_raw[cols_data]## 多元时序变量,他会把所有变量输入到模型当中
+        elif self.features == 'S':
+            df_data = df_raw[[self.target]]## 单元时序变量，只会预测target内容
 
         if self.scale:
             train_data = df_data[border1s[0]:border2s[0]]
@@ -186,15 +431,15 @@ class Dataset_DYG_day(Dataset):## old dyg data_set
         else:
             data = df_data.values
 
-        df_stamp = df_raw[['tm']][border1:border2]
-        df_stamp['tm'] = pd.to_datetime(df_stamp.tm)
+        df_stamp = df_raw[['date']][border1:border2]
+        df_stamp['date'] = pd.to_datetime(df_stamp.date)
         if self.timeenc == 0:
-            df_stamp['month'] = df_stamp.tm.apply(lambda row: row.month, 1)
-            df_stamp['day'] = df_stamp.tm.apply(lambda row: row.day, 1)
+            df_stamp['month'] = df_stamp.date.apply(lambda row: row.month, 1)
+            df_stamp['day'] = df_stamp.date.apply(lambda row: row.day, 1)
 
-            data_stamp = df_stamp.drop(['tm'], 1).values
+            data_stamp = df_stamp.drop(['date'], 1).values
         elif self.timeenc == 1: ## 取决于要不要用时间做embedding
-            data_stamp = time_features(pd.to_datetime(df_stamp['tm'].values), freq=self.freq)
+            data_stamp = time_features(pd.to_datetime(df_stamp['date'].values), freq=self.freq)
             data_stamp = data_stamp.transpose(1, 0) 
 
         self.data_x = data[border1:border2]

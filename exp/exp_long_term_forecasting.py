@@ -9,6 +9,8 @@ import os
 import time
 import warnings
 import numpy as np
+import re
+import csv
 
 warnings.filterwarnings('ignore')
 
@@ -248,18 +250,54 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         print('test shape:', preds.shape, trues.shape)
 
         # result save
-        folder_path = './results/' + setting + '/'
+        folder_path = './results/Third_paper/' + setting + '/'
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
+            
+
         mae, mse, rmse, mape, mspe = metric(preds, trues)
-        print('mse:{}, mae:{}'.format(mse, mae))
+        print('mse:{:.3f}, mae:{:.3f}'.format(mse, mae))
         f = open("result_long_term_forecast.txt", 'a')
         f.write(setting + "  \n")
-        f.write('mse:{}, mae:{}'.format(mse, mae))
+        f.write('mse:{:.3f}, mae:{:.3f}'.format(mse, mae))
         f.write('\n')
         f.write('\n')
         f.close()
+
+        ## 批量实验整理成result.csv
+        if "exp" in setting: ## 真正进行实验的时候才需要切割保存成实验结果
+            model_name = re.split(r'.*exp.*?(S_|M_)',setting.split("_DYG_Oneshot",1)[0],1)[2]
+            target_name = setting.split("_Third_",1)[1].split("_exp_",1)[0]
+            result_csv_path = "result_long_term_forecast.csv"
+            if not os.path.exists(result_csv_path):
+                with open (result_csv_path,mode="w",newline="") as f:
+                    writer =csv.writer(f,delimiter='\t')
+                    writer.writerow(["Target", "Model", "MAE", "MSE"])
+            with open (result_csv_path,mode="a",newline="") as f:
+                writer = csv.writer(f,delimiter='\t')
+                writer.writerow([target_name, model_name, f'{mae:.3f}', f'{mse:.3f}'])
+
+        ##  保存两种格式,形状不太对需要改
+        metric_array = np.array([mae, mse, rmse, mape, mspe])
+        print(preds.shape)
+        print(trues.shape)
+        num_features = preds.shape[-1]
+        preds_2d = preds.reshape(-1,num_features)
+        trues_2d = trues.reshape(-1,num_features)
+        np.savetxt(folder_path + 'metrics.csv', metric_array.reshape(1, metric_array.shape[0]), delimiter=',',\
+                    fmt="%.4f",header='MAE,MSE,RMSE,MAPE,MSPE', comments='')
+        ## 单变量预测
+        if num_features == 1:
+            np.savetxt(folder_path + 'pred.csv', preds_2d, delimiter=',',fmt="%.4f",header='Pred')
+            np.savetxt(folder_path + 'true.csv', trues_2d, delimiter=',',fmt="%.4f",header='True')
+        ## 多变量预测
+        if num_features !=1:
+            preds_header = ",".join(f'Pred_target{i}' for i in range(1,num_features))
+            trues_header = ",".join(f'True_target{i}' for i in range(1,num_features))
+            np.savetxt(folder_path + 'pred.csv', preds_2d, delimiter=',',fmt="%.4f",header=preds_header)
+            np.savetxt(folder_path + 'true.csv', trues_2d, delimiter=',',fmt="%.4f",header=trues_header)
+
 
         np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe]))
         np.save(folder_path + 'pred.npy', preds)

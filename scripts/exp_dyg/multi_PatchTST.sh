@@ -1,5 +1,5 @@
 model_name=PatchTST
-vmd_dim=6
+vmd_dim=5
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \

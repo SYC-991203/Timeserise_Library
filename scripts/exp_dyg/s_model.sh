@@ -1,5 +1,8 @@
 #!/bin/bash
+# 要调整pred-l 做短中长测试 之前全部的实验的pred-l都是96 要补充192 336 720
 
+
+# feature 取s 下单变量预测，多种模型的bash脚本
 # 模型列表
 models=("Transformer" "iTransformer" "Autoformer" "Crossformer" "DLinear" "FEDformer" "Informer" "LightTS" \
 "PatchTST" "Pyraformer" "Reformer""FiLM" "MICN" "Koopa")
