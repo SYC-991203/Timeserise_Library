@@ -12,7 +12,7 @@ from data_provider.uea import subsample, interpolate_missing, Normalizer
 from sktime.datasets import load_from_tsfile_to_dataframe
 import warnings
 import json
-
+from utils.data_arg import get_circular_permutations
 warnings.filterwarnings('ignore')
 
 class Dataset_DYG_OneSTL(Dataset):
@@ -54,10 +54,15 @@ class Dataset_DYG_OneSTL(Dataset):
         df_raw.columns: ['date', ...(other features), target feature]
         '''
         cols = list(df_raw.columns)
-        # print(cols)
-        cols.remove(self.target)
-        cols.remove('date')
-        df_raw = df_raw[['date'] + cols + [self.target]]
+        order_list = ["jn","nd","zt","ht","nn"]
+        if self.features == "S" or self.features == "MS":
+            cols.remove(self.target)
+            cols.remove('date')
+            df_raw = df_raw[['date'] + cols + [self.target]]
+        else:
+            cols.remove('date')
+            df_raw = df_raw[['date'] + cols]
+            
         num_train = int(len(df_raw) * 0.7)
         num_test = int(len(df_raw) * 0.2)
         num_vali = len(df_raw) - num_train - num_test
@@ -67,15 +72,32 @@ class Dataset_DYG_OneSTL(Dataset):
         border2 = border2s[self.set_type]
 
         if self.features == 'M' or self.features == 'MS':
-            target_list_all = ["jn_trend","jn_seasonal","jn_residual","nd_trend","nd_seasonal",\
-                "nd_residual","hx_trend","hx_seasonal","hx_residual"]
+            target_list_all = ["jn","jn_trend","jn_seasonal","jn_residual","nd","nd_trend","nd_seasonal","nd_residual",\
+                               "zt","zt_trend","zt_seasonal","zt_residual","ht","ht_trend","ht_seasonal","ht_residual",\
+                                "nn","nn_trend","nn_seasonal","nn_residual"]
+            
 
             column_names = df_raw.columns.to_list()
             target_list = target_list_all
             if self.target == "jn" or self.target == "nd" or self.target == "hx": ## 对于our或者cer或者kla原始信号和分解信号全计算
                 target_list = [col for col in column_names if self.target in col]
-            if self.target =="all":
-                target_list = target_list_all
+
+            if "all" in self.target: ## 对jn_all 这样的多变量进行实验
+                if self.target == "all":
+                    target_list = target_list_all
+                elif self.target == "nd_all":
+                    target_list =  ["nd","nd_trend","nd_seasonal","nd_residual"]
+                else:
+                    key_words  = ["jn","zt","ht","nn"]
+                    for keyword in key_words:
+                        if keyword in self.target:
+                            target_list =  [item for item in target_list_all if keyword in item]
+                    print(self.target,target_list)
+
+            if "order" in self.target:
+                per_map = get_circular_permutations(order_list)
+                target_list = per_map[self.target]
+                print("order",target_list)
         
             
             #cols_data = df_raw.columns[1:]
@@ -89,8 +111,10 @@ class Dataset_DYG_OneSTL(Dataset):
             train_data = df_data[border1s[0]:border2s[0]]
             self.scaler.fit(train_data.values)
             data = self.scaler.transform(df_data.values)
+            print("with scale",data[:5])
         else:
             data = df_data.values
+            print("without scale",data[:5])
 
         df_stamp = df_raw[['date']][border1:border2]
         df_stamp['date'] = pd.to_datetime(df_stamp.date)
@@ -132,7 +156,7 @@ class Dataset_DYG_OneSTL(Dataset):
 class Dataset_DYG_okc_OneSTL(Dataset):
     def __init__(self, root_path, flag='train', size=None,
                  features='S', data_path='DYG_Oneshot.csv',
-                 target='our', scale=True, timeenc=0, freq='h', seasonal_patterns=None):
+                 target='our', scale=False, timeenc=0, freq='h', seasonal_patterns=None):
         # size [seq_len, label_len, pred_len]
         # info
         print("DYG_Onestl_data_loader")
@@ -202,8 +226,10 @@ class Dataset_DYG_okc_OneSTL(Dataset):
             train_data = df_data[border1s[0]:border2s[0]]
             self.scaler.fit(train_data.values)
             data = self.scaler.transform(df_data.values)
+            print("with scale",data[:5])
         else:
             data = df_data.values
+            print("without scale",data[:5])
 
         df_stamp = df_raw[['date']][border1:border2]
         df_stamp['date'] = pd.to_datetime(df_stamp.date)

@@ -11,7 +11,7 @@ import warnings
 import numpy as np
 import re
 import csv
-
+import time
 warnings.filterwarnings('ignore')
 
 
@@ -41,6 +41,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
     def vali(self, vali_data, vali_loader, criterion):
         total_loss = []
         self.model.eval()
+        vali_start_time = time.time()
         with torch.no_grad():
             for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(vali_loader):
                 batch_x = batch_x.float().to(self.device)
@@ -75,8 +76,9 @@ class Exp_Long_Term_Forecast(Exp_Basic):
 
                 total_loss.append(loss)
         total_loss = np.average(total_loss)
+        vail_time = time.time() - vali_start_time
         self.model.train()
-        return total_loss
+        return total_loss, vail_time
 
     def train(self, setting):
         train_data, train_loader = self._get_data(flag='train')
@@ -97,13 +99,17 @@ class Exp_Long_Term_Forecast(Exp_Basic):
 
         if self.args.use_amp:
             scaler = torch.cuda.amp.GradScaler()
+        
+        total_train_time = 0
+        total_vali_time = 0
+        total_test_time = 0
 
         for epoch in range(self.args.train_epochs):
             iter_count = 0
             train_loss = []
 
             self.model.train()
-            epoch_time = time.time()
+            epoch_start_time = time.time()
             for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(train_loader):
                 iter_count += 1
                 model_optim.zero_grad()
@@ -158,10 +164,14 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                     loss.backward()
                     model_optim.step()
 
-            print("Epoch: {} cost time: {}".format(epoch + 1, time.time() - epoch_time))
+            epoch_time = time.time() - epoch_start_time
+            total_train_time += epoch_time
+            print("Epoch: {} cost time: {}".format(epoch + 1, epoch_time))
             train_loss = np.average(train_loss)
-            vali_loss = self.vali(vali_data, vali_loader, criterion)
-            test_loss = self.vali(test_data, test_loader, criterion)
+            vali_loss, vali_time = self.vali(vali_data, vali_loader, criterion)
+            total_vali_time += vali_time
+            test_loss, test_time = self.vali(test_data, test_loader, criterion)
+            total_test_time += test_time
 
             print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
                 epoch + 1, train_steps, train_loss, vali_loss, test_loss))
@@ -174,6 +184,12 @@ class Exp_Long_Term_Forecast(Exp_Basic):
 
         best_model_path = path + '/' + 'checkpoint.pth'
         self.model.load_state_dict(torch.load(best_model_path))
+        with open("result_long_term_forecast.txt", 'a') as f:
+            f.write(setting + "  \n")
+            f.write(f'Total Train Time: {total_train_time:.2f} seconds\n')
+            f.write(f'Total Validation Time: {total_vali_time:.2f} seconds\n')
+            f.write(f'Total Test Time: {total_test_time:.2f} seconds\n')
+            f.write('\n')
 
         return self.model
 
@@ -257,10 +273,10 @@ class Exp_Long_Term_Forecast(Exp_Basic):
             
 
         mae, mse, rmse, mape, mspe = metric(preds, trues)
-        print('mse:{:.3f}, mae:{:.3f}'.format(mse, mae))
+        print('mae:{:.4f}, mse:{:.4f}'.format(mae, mse))
         f = open("result_long_term_forecast.txt", 'a')
         f.write(setting + "  \n")
-        f.write('mse:{:.3f}, mae:{:.3f}'.format(mse, mae))
+        f.write('mae:{:.4f}, mse:{:.4f}'.format(mae, mse))
         f.write('\n')
         f.write('\n')
         f.close()
@@ -276,9 +292,9 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                     writer.writerow(["Target", "Model", "MAE", "MSE"])
             with open (result_csv_path,mode="a",newline="") as f:
                 writer = csv.writer(f,delimiter='\t')
-                writer.writerow([target_name, model_name, f'{mae:.3f}', f'{mse:.3f}'])
+                writer.writerow([target_name, model_name, f'{mae:.4f}', f'{mse:.4f}'])
 
-        ##  保存两种格式,形状不太对需要改
+        ##  保存两种格式
         metric_array = np.array([mae, mse, rmse, mape, mspe])
         print(preds.shape)
         print(trues.shape)

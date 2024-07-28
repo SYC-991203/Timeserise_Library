@@ -9,9 +9,9 @@ def run_model(model, data, features, seq_len, label_len, pred_len, e_layers, d_l
         '--is_training', '1',
         '--root_path', './data/DYG/',
         '--data_path', data,
-        '--model_id', 'Third_exp_single_S',
+        '--model_id', 'Third_exp_M_order1',
         '--model', model,
-        '--data', 'DYG_vmd',
+        '--data', 'DYG_Oneshot',
         '--features', features,
         '--seq_len', str(seq_len),
         '--label_len', str(label_len),
@@ -44,5 +44,8 @@ def run_model(model, data, features, seq_len, label_len, pred_len, e_layers, d_l
         print(result.stderr)
 
 
-run_model('Transformer', 'DYG_2-1_data.csv', 'S', 96, 48, 96, 2, 1, 3, 1, 1, 1, 256, 512, 5, \
-          des='Exp', batch_size=32, itr=1, devices='0,1,2,3', target='nn')
+run_model(
+    'HalfRouterformer', 'DYG_2-1_data.csv', 'M', seq_len=96, label_len=48, pred_len=96, e_layers=2, 
+    d_layers=1, factor=3, enc_in=5, dec_in=5, c_out=5, d_model=256, d_ff=512, top_k=5, \
+          des='test', batch_size=32, itr=1, devices='0,1,2,3', target='order1'
+          )

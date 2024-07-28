@@ -4,8 +4,9 @@ import torch.nn.functional as F
 import torch.optim as optim
 import pandas as pd
 import numpy as np
-from utils.metrics import*
+from utils.metrics import *
 from torch.utils.data import TensorDataset, DataLoader, random_split
+
 
 
 Device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -37,11 +38,41 @@ imf_nums = int(exp_itme.split("_",1)[1])
 input_dim = imf_nums+2
 hidden_dim = 64
 out_dim = input_dim
-
-
-class SignalReconstructor(nn.Module):
+## 消融实验所需的没有先验知识的DRnet
+class DRNet(nn.Module):
     def __init__(self):
-        super(SignalReconstructor, self).__init__()
+        super(DRNet, self).__init__()
+        # 定义网络层
+        self.fc1 = nn.Linear(input_dim-1, hidden_dim)
+        self.bn1 = nn.BatchNorm1d(hidden_dim)
+        self.relu = nn.ReLU()  # 从5个信号到5个权重
+        self.fc2 = nn.Linear(hidden_dim,out_dim-1) # 确保输出的所有权重和为1\
+        
+
+    def forward(self,imfs,error,K):
+        # 将输入信号拼接
+
+        x = torch.cat(imfs+[error], dim=1)
+        # 通过网络获取权重
+        x = self.fc1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
+        weights = self.fc2(x)
+        weights[:,-1] = torch.sigmoid(weights[:,-1]) ## error单独处理
+        other_weights = F.softmax(weights[:,0:-1],dim = 1 )*K ## K是imf个数-1 imf集中处理
+        weights = torch.cat((other_weights, weights[:, -1:]), dim=1)     
+        # 计算重构信号
+        reconstructed_signal = 0
+        for i,imf in enumerate(imfs):
+            reconstructed_signal += weights[:,i+1]*imf
+        reconstructed_signal += weights[:,-1]*error
+        return reconstructed_signal, weights
+
+
+## 完整的DRPKnet
+class DRPKNet(nn.Module):
+    def __init__(self):
+        super(DRPKNet, self).__init__()
         # 定义网络层
         self.fc1 = nn.Linear(input_dim, hidden_dim)
         self.bn1 = nn.BatchNorm1d(hidden_dim)
@@ -74,7 +105,8 @@ def get_all_data_from_loader(dataloader):
     all_data = list(zip(*[batch for batch in dataloader]))
     all_data = [torch.cat(data, dim=0) for data in all_data]
     return all_data
-def load_data(type_name:str,num_imf:int,file_path="./data/SignalRes/dyg_vmd_exp_2_6.xlsx")->TensorDataset:
+
+def load_data(type_name:str,num_imf:int,file_path="../data/SignalRes/dyg_vmd_exp_2_6.xlsx")->TensorDataset:
     try:
         df =pd.read_excel(file_path,sheet_name=f"{type_name}_{num_imf}")
         data_dic = {}
@@ -91,6 +123,7 @@ def load_data(type_name:str,num_imf:int,file_path="./data/SignalRes/dyg_vmd_exp_
         return dataset
     except Exception as e:
         print(f"Error for {type_name}:{e}")
+        
 def process_batch(batch_pram,num_imf:int,device):
     batch = [x.to(device) for x in batch_pram]
     s_pred = batch[0]
@@ -102,7 +135,8 @@ def process_batch(batch_pram,num_imf:int,device):
 # 定义最小loss    
 min_loss = float('inf')
 best_weights = None
-model = SignalReconstructor().to(device=Device)
+#model = DRPKNet().to(device=Device)
+model = DRNet().to(device=Device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 mse_loss = nn.MSELoss()
 data = load_data(type_key,imf_nums)

@@ -1,0 +1,39 @@
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:48 AM UTC 2024
+Model :Transformer
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:48 AM UTC 2024
+Model :iTransformer
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:48 AM UTC 2024
+Model :Autoformer
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:48 AM UTC 2024
+Model :Crossformer
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:48 AM UTC 2024
+Model :DLinear
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:48 AM UTC 2024
+Model :FEDformer
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:48 AM UTC 2024
+Model :Informer
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:48 AM UTC 2024
+Model :LightTS
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:48 AM UTC 2024
+Model :PatchTST
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:48 AM UTC 2024
+Model :Pyraformer
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:48 AM UTC 2024
+Model :ReformerFiLM
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:48 AM UTC 2024
+Model :MICN
+Model ID: cer_exp_single_S
+Date: Tue Jan 23 04:09:49 AM UTC 2024
+Model :Koopa

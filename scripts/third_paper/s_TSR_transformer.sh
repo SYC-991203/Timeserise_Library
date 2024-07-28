@@ -1,20 +1,20 @@
 #!/bin/bash
-# 要调整pred-l 做短中长测试 之前全部的实验的pred-l都是96 要补充192 336 720
-## 基座选择实验，遍历所有模型和Target，挑选最好的基座模型
-# 模型列表
-models=("Transformer" "iTransformer" "Autoformer" "Crossformer" "DLinear" "FEDformer" "Informer" "LightTS" \
-"PatchTST" "Pyraformer" "Reformer""FiLM" "MICN" "Koopa")
-targets=("jn" "nd" "zt" "ht" "nn" ) # target 取值取5个变量
- #model id 统一命名为论文index_变量名_实验（exp）or 测试代码（test）_分解数量_M（多变量预测多变量）S（单-单）MS（多-单）
+## 基座检查实验，确定基座模型对分解变量的预测是否有效
+#model id 统一命名为论文index_变量名_实验（exp）or 测试代码（test）_分解数量_M（多变量预测多变量）S（单-单）MS（多-单）
 
+# 模型列表
+model="Transformer"
+targets=("jn" "nd" "zt" "ht" "nn" )
+
+compoents=("trend" "seasonal" "residual") 
 
 # 循环遍历模型列表
 for target in "${targets[@]}"
 do
     echo "Running Python script with model: $model for $target"
-    for model in "${models[@]}"
+    for component in "${compoents[@]}"
     do
-        model_id=Third_${target}_exp_single_S
+        model_id=Third_${target}_${component}_exp_ablution_b_S
         python -u run.py \
             --task_name long_term_forecast \
             --is_training 1 \
@@ -40,7 +40,7 @@ do
             --batch_size 32 \
             --itr 1 \
             --devices '0,1,2,3' \
-            --target "$target"\
+            --target "${target}_${component}"\
             --use_multi_gpu
     
         exit_code=$?  # 获取Python脚本的退出码
@@ -48,11 +48,9 @@ do
         if [ $exit_code -ne 0 ]; then
             echo "Python script with model $model encountered an error. Exit code: $exit_code"
             echo "Target ID: $target" >> error_log.txt # 记录出错的target 内容
-            echo "Model ID: $model_id" >> error_log.txt  # 记录模型ID到error_log.txt文件
             echo "Date: $(date)" >> error_log.txt  # 记录当前日期到error_log.txt文件
-            echo "Model :$model" >> error_log.txt  # 记录出错的模型名称到error_log.txt文件
         else
-            echo "Python script with model $model  and  $target finished successfully"
+            echo "Python script with model $model  and  ${target}_${component} finished successfully"
         fi
     done
 done

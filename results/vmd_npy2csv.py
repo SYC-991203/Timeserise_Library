@@ -20,7 +20,7 @@ for path in file_paths:
                 column_names = ["mae", "mse", "rmse", "mape", "mspe"]
                 # 创建 DataFrame
                 df_metric = pd.DataFrame({column_names[i]: [data[i]] for i in range(len(data))})
-                df_metric.to_csv(path+"/metric.csv",sep="\t")
+                df_metric.to_csv(path+"/metric.csv",sep="\t",index=False)
                 #result_list.append(df_metric.iloc[:,-1])
                 #print(data)
                 #df = pd.DataFrame()
@@ -48,11 +48,11 @@ for path in file_paths:
                      ##分解信号求和
                 if "pred" in data_path:
                     df_pred = df
-                    df_pred.to_csv(path+"/pred.csv",sep="\t")
+                    df_pred.to_csv(path+"/pred.csv",sep="\t",index=False)
                     result_list.append(df_pred.iloc[:,-1])
                 if "true" in data_path:
                     df_true = df
-                    df_true.to_csv(path+"/true.csv",sep="\t")
+                    df_true.to_csv(path+"/true.csv",sep="\t",index=False)
                     result_list.append(df_true.iloc[:,-1])
 
 print("trans successfully")

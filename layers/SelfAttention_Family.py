@@ -300,3 +300,87 @@ class TwoStageAttentionLayer(nn.Module):
         final_out = rearrange(dim_enc, '(b seg_num) ts_d d_model -> b ts_d seg_num d_model', b=batch)
 
         return final_out
+
+
+class HalfRouterAttentionLayer(nn.Module):
+    '''
+    The Two Stage Attention (TSA) Layer
+    input/output shape: [batch_size, Data_dim(D), Seg_num(L), d_model]
+    '''
+
+    def __init__(self, configs,
+                 seg_num, factor, d_model, n_heads, d_ff=None, dropout=0.1):
+        super(HalfRouterAttentionLayer, self).__init__()
+        d_ff = d_ff or 4 * d_model
+        self.time_attention = AttentionLayer(FullAttention(False, configs.factor, attention_dropout=configs.dropout,
+                                                           output_attention=configs.output_attention), d_model, n_heads)
+        self.local_full_attention =  AttentionLayer(FullAttention(False, configs.factor, attention_dropout=configs.dropout,
+                                                           output_attention=configs.output_attention), d_model, n_heads)
+        self.dim_sender = AttentionLayer(FullAttention(False, configs.factor, attention_dropout=configs.dropout,
+                                                       output_attention=configs.output_attention), d_model, n_heads)
+        self.dim_receiver = AttentionLayer(FullAttention(False, configs.factor, attention_dropout=configs.dropout,
+                                                         output_attention=configs.output_attention), d_model, n_heads)
+        self.router = nn.Parameter(torch.randn(seg_num, factor, d_model))
+
+        self.dropout = nn.Dropout(dropout)
+
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        self.norm3 = nn.LayerNorm(d_model)
+        self.norm4 = nn.LayerNorm(d_model)
+
+        self.MLP1 = nn.Sequential(nn.Linear(d_model, d_ff),
+                                  nn.GELU(),
+                                  nn.Linear(d_ff, d_model))
+        self.MLP2 = nn.Sequential(nn.Linear(d_model, d_ff),
+                                  nn.GELU(),
+                                  nn.Linear(d_ff, d_model))
+
+    def forward(self, x, attn_mask=None, tau=None, delta=None):
+        # Cross Time Stage: Directly apply MSA to each dimension
+        batch = x.shape[0]
+        ts_d = x.shape[1] 
+        time_in = rearrange(x, 'b ts_d seg_num d_model -> (b ts_d) seg_num d_model')
+        time_enc, attn = self.time_attention(
+            time_in, time_in, time_in, attn_mask=None, tau=None, delta=None
+        )
+        dim_in = time_in + self.dropout(time_enc)
+        dim_in = self.norm1(dim_in)
+        dim_in = dim_in + self.dropout(self.MLP1(dim_in))
+        dim_in = self.norm2(dim_in)
+
+        # Split the input into two halves
+        dim_in_first_half = dim_in[:3*batch, :, :]
+        dim_in_second_half = dim_in[3*batch:, :, :]
+
+        ## 对于前三通道有机理关系的做局部的MSA
+        loacl_dim_in_first_half = rearrange(dim_in_first_half, '(b ts_d) seg_num d_model -> (b seg_num) ts_d d_model', b=batch)
+        local_dim_enc,local_atten = self.local_full_attention(loacl_dim_in_first_half,loacl_dim_in_first_half,loacl_dim_in_first_half,attn_mask=None, tau=None, delta=None)
+
+        local_dim_in = loacl_dim_in_first_half + self.dropout(local_dim_enc)
+        local_dim_in = self.norm1(local_dim_in)
+        local_dim_in = local_dim_in + self.dropout(self.MLP1(local_dim_in))
+        local_dim_in = self.norm2(local_dim_in)
+
+        # 上述的输出拼接处理
+        local_dim_out = rearrange(local_dim_in, '(b seg_num) ts_d d_model -> (b ts_d) seg_num d_model', b=batch)
+        local_out_cat = torch.cat([local_dim_out, dim_in_second_half], dim=0)
+
+        ## 再整体做Router attention
+        dim_send = rearrange(local_out_cat, '(b ts_d) seg_num d_model -> (b seg_num) ts_d d_model', b=batch)
+        batch_router = repeat(self.router, 'seg_num factor d_model -> (repeat seg_num) factor d_model', repeat=batch)
+        # 检查和打印维度以确认匹配
+
+        dim_buffer_first_half, attn = self.dim_sender(batch_router, dim_send, dim_send, attn_mask=None, tau=None, delta=None)
+        dim_receive_first_half, attn = self.dim_receiver(dim_send, dim_buffer_first_half, dim_buffer_first_half, attn_mask=None, tau=None, delta=None)
+        dim_enc_first_half = dim_send + self.dropout(dim_receive_first_half)  # 残差连接
+        dim_enc_first_half = self.norm3(dim_enc_first_half)  # 应用 LayerNorm
+        dim_enc_first_half = dim_enc_first_half + self.dropout(self.MLP2(dim_enc_first_half))  # MLP 层和残差连接
+        dim_enc_first_half = self.norm4(dim_enc_first_half)  # 再次应用 LayerNorm
+
+        # 将处理后的前3个通道和未处理的后2个通道拼接
+        dim_enc_first_half = rearrange(dim_enc_first_half, '(b seg_num) ts_d d_model -> (b ts_d) seg_num d_model', b=batch)
+        final_out = rearrange(dim_enc_first_half, '(b ts_d) seg_num d_model -> b ts_d seg_num d_model', b=batch)
+
+
+        return final_out
