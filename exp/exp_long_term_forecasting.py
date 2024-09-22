@@ -266,7 +266,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         print('test shape:', preds.shape, trues.shape)
 
         # result save
-        folder_path = './results/Third_paper/' + setting + '/'
+        folder_path = './results/KDD/' + setting + '/'
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 

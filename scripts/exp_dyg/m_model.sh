@@ -5,7 +5,7 @@
 # feature 取s 下单变量预测，多种模型的bash脚本
 
 models=("Transformer" "iTransformer" "Autoformer" "Crossformer" "DLinear" "FEDformer" "Informer" "LightTS" \
-"PatchTST" "Pyraformer" "Reformer""FiLM" "MICN" "Koopa")
+"PatchTST" "Pyraformer" "Reformer""HalfRouterformer" )
 target=$1 # target 取值只有 our cer kla 和 all
 model_id=our_exp_1211 #model id 统一命名为变量名_实验（exp）or 测试代码（test）_DATE_M（多变量预测多变量）S（单-单）MS（多-单）
 if [ "$target" = "all" ]; then

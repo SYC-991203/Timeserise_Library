@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from einops import rearrange, repeat
 from layers.HalfRouterformer_EnDec import scale_block, Encoder, Decoder, DecoderLayer
 from layers.Embed import PatchEmbedding
-from layers.SelfAttention_Family import AttentionLayer, FullAttention, HalfRouterAttentionLayer
+from layers.SelfAttention_Family import AttentionLayer, FullAttention, DirectionAttentionLayer
 from models.PatchTST import FlattenHead
 from math import ceil
 
@@ -21,6 +21,8 @@ class Model(nn.Module):
         self.seg_len = 12
         self.win_size = 2
         self.task_name = configs.task_name
+        self.direction = getattr(configs, 'direction', None)
+
 
         # The padding operation to handle invisible sgemnet length
         self.pad_in_len = ceil(1.0 * configs.seq_len / self.seg_len) * self.seg_len
@@ -51,8 +53,8 @@ class Model(nn.Module):
         self.decoder = Decoder(
             [
                 DecoderLayer(
-                    HalfRouterAttentionLayer(configs, (self.pad_out_len // self.seg_len), configs.factor, configs.d_model, configs.n_heads,
-                                           configs.d_ff, configs.dropout),
+                    DirectionAttentionLayer(configs, (self.pad_out_len // self.seg_len), configs.factor, configs.d_model, configs.n_heads,
+                                           self.direction,configs.d_ff, configs.dropout),
                     AttentionLayer(
                         FullAttention(False, configs.factor, attention_dropout=configs.dropout,
                                       output_attention=False),

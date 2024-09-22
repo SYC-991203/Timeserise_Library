@@ -395,8 +395,8 @@ class Dataset_DYG_u(Dataset):
 
 class Dataset_DYG_base(Dataset):## old dyg data_set
     def __init__(self, root_path, flag='train', size=None,
-                 features='S', data_path='DYG_2_data.csv',
-                 target='zs', scale=True, timeenc=0, freq='h', seasonal_patterns=None,cut_off=1000):
+                 features='M', data_path='DYG_data_3.csv',
+                 target='zs', scale=True, timeenc=0, freq='h', seasonal_patterns=None,cut_off=None):
         # size [seq_len, label_len, pred_len]
         # info
         print("DYG_base")

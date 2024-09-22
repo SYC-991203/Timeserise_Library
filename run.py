@@ -95,9 +95,18 @@ if __name__ == '__main__':
     parser.add_argument('--p_hidden_dims', type=int, nargs='+', default=[128, 128],
                         help='hidden layer dimensions of projector (List)')
     parser.add_argument('--p_hidden_layers', type=int, default=2, help='number of hidden layers in projector')
+    ## directformer params
+    # 添加 direction 参数，但设置为可选
+    parser.add_argument('--direction', type=str, default=None,
+                    help='direction list indicating which channels participate in local MSA (optional)')
+
 
 
     args = parser.parse_args()
+
+    if args.direction is not None:
+        args.direction = [int(item) for item in args.direction.split(',')]
+
     print(torch.cuda.is_available())
 
     args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False
