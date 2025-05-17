@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import random
 
 
 class RevIN(nn.Module):
@@ -36,15 +37,17 @@ class RevIN(nn.Module):
 
     def _get_statistics(self, x):
         dim2reduce = [0]
-        self.mean = torch.median(x)
+        # self.mean = torch.median(x).detach()
+        self.mean = torch.mean(x, dim=dim2reduce, keepdim=True).detach()
         # print(self.mean)
         # 计算每个数据点与均值之间的曼哈顿距离
-        distances = torch.sum(torch.abs(x - self.mean), dim=dim2reduce)
+        distances = torch.mean(torch.abs(x - self.mean), dim=dim2reduce)
         # 距离的均值，即为方差的估计值
         # print(distances)
-        variance = torch.mean(distances)
+        # variance = distances/= 64
         # print(variance)
-        self.stdev = variance + self.eps
+        self.stdev = (distances + self.eps).detach()
+        # print(self.stdev)
 
     def _normalize(self, x):
         x = x - self.mean
@@ -63,8 +66,15 @@ class RevIN(nn.Module):
         return x
 
 if __name__ == '__main__':
+    random.seed(0)
+    torch.manual_seed(0)
+
+    # Define the shape of the tensor
     tensor_shape = (64, 6)
+
+    # Generate the random tensor
     x = torch.rand(tensor_shape)
+
     layer = RevIN(6)
     y = layer(x, mode='norm')
     z = layer(y, mode='denorm')

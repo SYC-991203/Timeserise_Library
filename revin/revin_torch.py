@@ -31,7 +31,9 @@ class RevIN(nn.Module):
     def _get_statistics(self, x):
         dim2reduce = [0]
         self.mean = torch.mean(x, dim=dim2reduce, keepdim=True).detach()
+        # print(self.mean)
         self.stdev = torch.sqrt(torch.var(x, dim=dim2reduce, keepdim=True, unbiased=False) + self.eps).detach()
+        # print(self.stdev)
 
     def _normalize(self, x):
         x = x - self.mean
@@ -48,3 +50,23 @@ class RevIN(nn.Module):
         x = x * self.stdev
         x = x + self.mean
         return x
+
+if __name__ == '__main__':
+    import random
+
+    random.seed(0)
+    torch.manual_seed(0)
+
+    # Define the shape of the tensor
+    tensor_shape = (64, 6)
+
+    # Generate the random tensor
+    x = torch.rand(tensor_shape)
+
+    layer = RevIN(6)
+    y = layer(x, mode='norm')
+    z = layer(y, mode='denorm')
+
+    print(x)
+    print(y)
+    print(z)

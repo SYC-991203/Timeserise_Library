@@ -3,15 +3,30 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import pandas as pd
-import numpy as np
 from utils.metrics import*
 from torch.utils.data import TensorDataset, DataLoader, random_split
 from revin.revin_ManhattanDistance import RevIN
+import random
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
 
+'''固定随机种子
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+set_seed(42)  # 使用任意的整数作为种子'''
 
 Device = "cuda" if torch.cuda.is_available() else "cpu"
 lambda_value = 1e-2
-exp_itme = "nd_6" ## 修改这个就行了 就修改成项目_IMF个数 其他什么都不用改了
+exp_itme = "jn_5" ## 修改这个就行了 就修改成项目_IMF个数 其他什么都不用改了
 type_names_list = ["jn","nd","ht"]
 
 tensorset_dic={
@@ -82,15 +97,21 @@ class SignalReconstructor(nn.Module):
             reconstructed_signal += weights[:, i + 1] * imf
         # reconstructed_signal += weights[:,-1]*error
 
-        return reconstructed_signal, weights
+        return reconstructed_signal, weights,data,x_norm
 
+# 可视化函数
+def plot_heatmap(data, title):
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(data, cmap='viridis')
+    plt.title(title)
+    plt.show()
 
 #数据解析
 def get_all_data_from_loader(dataloader):
     all_data = list(zip(*[batch for batch in dataloader]))
     all_data = [torch.cat(data, dim=0) for data in all_data]
     return all_data
-def load_data(type_name:str,num_imf:int,file_path="/home/qsmx/Data/DYG_sgc_pred.xlsx")->TensorDataset:
+def load_data(type_name:str,num_imf:int,file_path="./data/DYG_sgc_pred.xlsx")->TensorDataset:
     try:
         df =pd.read_excel(file_path,sheet_name=f"{type_name}_{num_imf}")
         data_dic = {}
@@ -161,7 +182,7 @@ for epoch in range(200):  # 训练200轮
     for batch in train_loader:
         s_pred,imfs,true = process_batch(batch_pram=batch,num_imf=imf_nums,device=Device)
         optimizer.zero_grad()
-        reconstructed_signal, weights = model(s_pred,imfs)
+        reconstructed_signal, weights,data,x_norm_m = model(s_pred,imfs)
         #print(weights)
         loss = mse_loss(reconstructed_signal, true)
     # 可以在这里添加模型复杂度的惩罚项
@@ -174,7 +195,7 @@ for epoch in range(200):  # 训练200轮
     print(f"Epoch {epoch+1}, Loss: {loss.item()}")
 ## 计算指标
 weight = torch.mean(best_weights,dim = 0,keepdim=True)
-print(f"Minimum Loss: {min_loss}, Best Weights: {best_weights},weight_mean:{weight}")
+print(f"Minimum Loss: {min_loss}, Best Weights: {best_weights},weight_mean:{weight},data:{data},x_norm_m:{x_norm_m}")
 
 test_data_list = []
 

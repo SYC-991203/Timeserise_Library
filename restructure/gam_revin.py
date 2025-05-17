@@ -7,11 +7,24 @@ import numpy as np
 from utils.metrics import*
 from torch.utils.data import TensorDataset, DataLoader, random_split
 from revin.revin_torch import RevIN
+import random
 
+''' 固定随机种子
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+set_seed(42)  # 使用任意的整数作为种子'''
 
 Device = "cuda" if torch.cuda.is_available() else "cpu"
 lambda_value = 1e-2
-exp_itme = "nd_6" ## 修改这个就行了 就修改成项目_IMF个数 其他什么都不用改了
+exp_itme = "nd_4" ## 修改这个就行了 就修改成项目_IMF个数 其他什么都不用改了
 type_names_list = ["jn","nd","ht"]
 
 tensorset_dic={
@@ -74,15 +87,15 @@ class SignalReconstructor(nn.Module):
         x_spatial_att = self.spatial_attention(x).sigmoid()
         out = x * x_spatial_att
 
-        weights = torch.reshape(out, (hidden_dim, input_dim))
-        weights = self.revinlayer(weights, mode='denorm')
+        out = torch.reshape(out, (hidden_dim, input_dim))
+        weights = self.revinlayer(out, mode='denorm')
 
         reconstructed_signal = weights[:, 0] * pred
         for i, imf in enumerate(imfs):
             reconstructed_signal += weights[:, i + 1] * imf
         # reconstructed_signal += weights[:,-1]*error
 
-        return reconstructed_signal, weights
+        return reconstructed_signal, weights,data,x_norm,out
 
 
 #数据解析
@@ -161,7 +174,7 @@ for epoch in range(200):  # 训练200轮
     for batch in train_loader:
         s_pred,imfs,true = process_batch(batch_pram=batch,num_imf=imf_nums,device=Device)
         optimizer.zero_grad()
-        reconstructed_signal, weights = model(s_pred,imfs)
+        reconstructed_signal, weights,data,x_norm ,out = model(s_pred,imfs)
         #print(weights)
         loss = mse_loss(reconstructed_signal, true)
     # 可以在这里添加模型复杂度的惩罚项
@@ -174,7 +187,7 @@ for epoch in range(200):  # 训练200轮
     print(f"Epoch {epoch+1}, Loss: {loss.item()}")
 ## 计算指标
 weight = torch.mean(best_weights,dim = 0,keepdim=True)
-print(f"Minimum Loss: {min_loss}, Best Weights: {best_weights},weight_mean:{weight}")
+print(f"Minimum Loss: {min_loss}, Best Weights: {best_weights},weight_mean:{weight},data:{data},x_norm:{x_norm},out:{out}")
 
 test_data_list = []
 

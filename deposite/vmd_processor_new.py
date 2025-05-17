@@ -147,55 +147,57 @@ def hhtlw(IMFs,t,f_range=[0,500],t_range=[0,1],ft_size=[128,128],draw=1):
         plt.show()
     return t,f,c_matrix
 
-    
-if __name__=='__main__':
-        original_data = pd.read_csv("./data/DYG/DYG_clean.csv",header=0)# 2900行 18列
-        Fs=2152 # 采样频率
-        N=2152 # 采样点数
-        t=np.arange(1,N+1)/N
-        #print(original_data.columns)
-        our = original_data['our']
-        cer = original_data['cer']
-        kla = original_data['kla']
-        
-        result_u_list =[]
-        error_our_list = []
-        error_cer_list = []
-        error_kla_list = []
-        
-        u_our,k_our=Auto_VMD_main(our,Fs,draw=1,maxK=10)
-        u_cer,k_cer=Auto_VMD_main(cer,Fs,draw=1,maxK=10)
-        u_kla,k_kla=Auto_VMD_main(kla,Fs,draw=1,maxK=10)
 
+if __name__ == '__main__':
+    # 指定文件路径和工作表名称
+    InFile = r"E:\ProgramFiles\conference\DYG_data\DYG_data.xlsx"
+    sheet_name = 'Sheet3'  # 替换为你想要的工作表名称
 
-        for i in range(len(our)):
-            e_our = our[i]
-            e_cer = cer[i]
-            e_kla = kla[i]
-            for j in range(max(k_our,k_cer,k_kla)):
-                e_our -= u_our[j][i]
-                e_cer -= u_cer[j][i] 
-                e_kla -= u_kla[j][i]
-            error_our_list.append(e_our)
-            error_cer_list.append(e_cer)
-            error_kla_list.append(e_kla)
+    # 读取 Excel 文件中的指定 Sheet
+    original_data = pd.read_excel(InFile, sheet_name=sheet_name)
 
-        result_u_list.extend([u_our.T,u_cer.T,u_kla.T])
-        u_data = {}
-        for i in range(len(u_our)):
-            u_data[f"u_our_imf{i}"] = u_our[i]
-            u_data[f"u_cer_imf{i}"] = u_cer[i]
-            u_data[f"u_kla_imf{i}"] = u_kla[i]
-        u_data.update({"u_our_imferror":error_our_list,"u_cer_imferror":error_cer_list,"u_kla_imferror":error_kla_list})
-        u_df = pd.DataFrame(u_data)
-        # existing_cols = original_data.columns.intersection(u_df.columns)
-        # if len(existing_cols)>0:
-        #     original_data[existing_cols] = u_df[existing_cols]
-        # else:## 没有写入。直接续写
-        original_with_u = pd.concat([original_data,u_df],axis =1)
-        original_with_u.to_csv(f"./data/DYG/DYG_vmd_{k_our}.csv",index=False)
-        print(u_df.shape)
+    # 设置采样频率和采样点数
+    Fs = 9882  # 采样频率
+    N = 9882  # 采样点数
+    t = np.arange(1, N + 1) / N
 
+    # 定义变量列表
+    variables = ['jn', 'nd', 'hx']
 
+    # 创建一个字典来存储所有变量的结果和误差
+    all_u_data = {}
 
-        #tt,ff,c_matrix=hhtlw(IMFs,t,f_range=[0,Fs/2],t_range=[0,t[-1]],ft_size=[128,128],draw=1)     #画希尔伯特谱
+    # 处理每个变量
+    for var in variables:
+        # 提取变量的数据
+        data = original_data[var]
+
+        # 定义结果和误差列表
+        result_u_list = []
+        error_list = []
+
+        # 使用 Auto_VMD_main 函数处理变量
+        u_var, k_var = Auto_VMD_main(data, Fs, draw=1, maxK=10)
+
+        # 计算误差并存储在列表中
+        for i in range(len(data)):
+            e_var = data[i]
+            for j in range(k_var):
+                e_var -= u_var[j][i]
+            error_list.append(e_var)
+
+        # 将处理后的数据存储在字典中
+        for i in range(len(u_var)):
+            all_u_data[f"u_{var}_imf{i}"] = u_var[i]
+        all_u_data[f"u_{var}_imferror"] = error_list
+
+    # 将所有处理后的数据转换为 DataFrame
+    u_df = pd.DataFrame(all_u_data)
+
+    # 将处理后的数据与原始数据合并并保存到 CSV 文件中
+    original_with_u = pd.concat([original_data, u_df], axis=1)
+    output_file = r"E:\ProgramFiles\conference\DYG_data\DYG_vmd_combined.csv"
+    original_with_u.to_csv(output_file, index=False)
+
+    # 打印处理后的 DataFrame 形状
+    print(u_df.shape)
