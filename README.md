@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Time Series Library (TSlib)
 TSlib is an open-source library for deep learning researchers, especially for deep time series analysis.
 
@@ -129,3 +130,7 @@ All the experiment datasets are public, and we obtain them from the following li
 <a href="https://github.com/thuml/Time-Series-Library/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=thuml/Time-Series-Library" />
 </a>
+=======
+# BPSN
+A Soft Sensor Net based on the Symplectic decomposition-Global attention reconstruction Architecture for biopharmaceutical industry
+>>>>>>> 776f151981f2df8b53998a46f9770fcb55884c0a
