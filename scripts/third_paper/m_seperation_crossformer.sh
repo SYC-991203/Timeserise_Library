@@ -1,5 +1,5 @@
-feature_dim=4
-targets=("jn_all" "nd_all" "zt_all" "ht_all" "nn_all" )
+feature_dim=20
+targets=("all" )
 for target in "${targets[@]}"
 do
     echo "Running Python script with order: $target"
@@ -30,5 +30,6 @@ do
         --itr 1 \
         --devices '0,1,2,3' \
         --target "$target"\
+        --output_attention\
         --use_multi_gpu
 done

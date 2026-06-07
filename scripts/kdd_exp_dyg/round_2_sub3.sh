@@ -1,19 +1,15 @@
 #!/bin/bash
 
 # 模型列表
-models=("Transformer" "iTransformer" "Autoformer" "Crossformer" "DLinear" "FEDformer" "Informer" "LightTS" \
-"PatchTST" "Pyraformer" "Reformer" "HalfRouterformer" "Directionformer")
-
+models=("Transformer" "Autoformer" "Crossformer" "FEDformer" "Informer"  \
+"Pyraformer" "Reformer" "HalfRouterformer" "Directionformer")
 # 数据集列表
-datasets=("sub1" "sub2" "sub3" "sub4")
+datasets=( "sub3")
 
 # 数据集对应的 direction 参数
 declare -A directions
 directions=(
-    ["sub1"]="0,0,1,1,1"
-    ["sub2"]="0,0,1,1,1"
     ["sub3"]="0,0,0,1,1"
-    ["sub4"]="0,0,1,1,1"
 )
 
 target=$1 # 目标变量
@@ -69,9 +65,9 @@ do
             --d_ff 512 \
             --top_k 5 \
             --des 'Exp' \
-            --batch_size 1024 \
+            --batch_size 128 \
             --itr 1 \
-            --devices '0,1,2,3,4,5,6,7' \
+            --devices '3,4' \
             --target "$target" \
             --direction "$direction" \
             --use_multi_gpu &  # 在后台运行
@@ -105,3 +101,4 @@ function terminate_all() {
 
 # 调用 terminate_all 函数来终止所有进程（如果需要）
 # terminate_all
+

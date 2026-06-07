@@ -1,18 +1,16 @@
 #!/bin/bash
 
 # 模型列表
-models=("Transformer" "iTransformer" "Autoformer" "Crossformer" "DLinear" "FEDformer" "Informer" "LightTS" \
-"PatchTST" "Pyraformer" "Reformer" "HalfRouterformer" "Directionformer")
-
+# models=("Transformer" "iTransformer" "Autoformer" "Crossformer" "DLinear" "FEDformer" "Informer" "LightTS" \
+# "PatchTST" "Pyraformer" "Reformer" "HalfRouterformer" "Directionformer")
+models=("Directionformer")
 # 数据集列表
-datasets=("sub1" "sub2" "sub3" "sub4")
+datasets=( "sub2"  "sub4")
 
 # 数据集对应的 direction 参数
 declare -A directions
 directions=(
-    ["sub1"]="0,0,1,1,1"
     ["sub2"]="0,0,1,1,1"
-    ["sub3"]="0,0,0,1,1"
     ["sub4"]="0,0,1,1,1"
 )
 
