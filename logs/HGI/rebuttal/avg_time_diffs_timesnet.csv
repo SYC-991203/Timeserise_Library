@@ -1,0 +1,9 @@
+model,sub,pred,avg_time_seconds,count
+TimesNet,femprocess,192,211810.0,1
+TimesNet,femprocess,96,215364.0,1
+TimesNet,offair,720,448192.0,1
+TimesNet,femprocess,336,155563.5,2
+TimesNet,femprocess,720,115305.0,2
+TimesNet,offair,192,368228.0,1
+TimesNet,offair,96,328518.0,1
+TimesNet,offair,336,411646.0,1

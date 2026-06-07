@@ -1,0 +1,11 @@
+model,sub,pred,time_seconds
+TimesNet,femprocess,192,211810
+TimesNet,femprocess,96,215364
+TimesNet,offair,720,448192
+TimesNet,femprocess,336,99408
+TimesNet,femprocess,720,18870
+TimesNet,femprocess,720,211740
+TimesNet,femprocess,336,211719
+TimesNet,offair,192,368228
+TimesNet,offair,96,328518
+TimesNet,offair,336,411646

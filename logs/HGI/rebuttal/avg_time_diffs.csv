@@ -1,0 +1,13 @@
+model,sub,pred,avg_time_seconds,count
+TimeMKG,sub2,720,6663.0,1
+TimeMKG,sub1,336,6084.0,1
+TimeMKG,sub3,192,5698.0,1
+TimeMKG,sub3,720,4465.0,1
+TimeMKG,sub3,96,6435.0,1
+TimeMKG,sub1,720,17438.0,1
+TimeMKG,sub2,96,94653.0,1
+TimeMKG,sub3,336,5013.0,1
+TimeMKG,sub1,192,5972.0,1
+TimeMKG,sub2,336,17648.0,1
+TimeMKG,sub1,96,6077.0,1
+TimeMKG,sub2,192,11089.0,1

@@ -1,0 +1,13 @@
+model,sub,pred,avg_time_seconds,count
+HGI,sub3,720,60318.0,1
+HGI,sub3,96,3382.0,1
+HGI,sub1,336,14289.0,2
+HGI,sub2,720,72171.0,1
+HGI,sub1,720,23294.0,2
+HGI,sub1,192,17287.0,2
+HGI,sub2,192,3677.0,1
+HGI,sub1,96,5478.0,1
+HGI,sub3,336,12494.0,1
+HGI,sub2,336,5413.0,1
+HGI,sub2,96,3574.0,1
+HGI,sub3,192,3877.0,1
