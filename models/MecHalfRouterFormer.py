@@ -10,12 +10,6 @@ from math import ceil
 import numpy as np
 
 
-import torch
-import torch.nn as nn
-import numpy as np
-from math import ceil, sqrt
-from einops import rearrange, repeat
-
 # 假设辅助资料代码中的类已导入，例如 FullAttention, DataEmbedding, 等
 def detect_change_points(sequence, num_splits):
     # 计算相邻元素之间的差异

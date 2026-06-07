@@ -90,7 +90,7 @@ if __name__ == '__main__':
     parser.add_argument('--temp', type=float, default='1.0', help='temperature parm')
 
     parser.add_argument('--lradj', type=str, default='type1', help='adjust learning rate')
-    parser.add_argument('--use_amp', action='store_true', help='use automatic mixed precision training', default=True)
+    parser.add_argument('--use_amp', action='store_true', help='use automatic mixed precision training', default=False)
 
     # GPU
     parser.add_argument('--use_gpu', type=bool, default=True, help='use gpu')

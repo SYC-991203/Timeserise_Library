@@ -1,5 +1,5 @@
 from data_provider.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Custom, Dataset_M4, PSMSegLoader, \
-    MSLSegLoader, SMAPSegLoader, SMDSegLoader, SWATSegLoader, UEAloader,Dataset_DYG_base,Dataset_DYG_u,Dataset_DYG_OneSTL
+    MSLSegLoader, SMAPSegLoader, SMDSegLoader, SWATSegLoader, UEAloader,Dataset_DYG_base,Dataset_DYG_u,Dataset_DYG_OneSTL,Dataset_DYG_LLM
 from data_provider.uea import collate_fn
 from torch.utils.data import DataLoader
 ## 以下不同数据集用于不同的任务，ETT系列和custome系列都是做时序预测，所以改写dataloader的时候，对这些数据集去改写
@@ -13,6 +13,7 @@ data_dict = {
     "DYG_base":Dataset_DYG_base,
     "DYG_vmd":Dataset_DYG_u,
     "DYG_Oneshot":Dataset_DYG_OneSTL,
+    'DYG_LLM':Dataset_DYG_LLM,
     'm4': Dataset_M4,
     'PSM': PSMSegLoader,
     'MSL': MSLSegLoader,

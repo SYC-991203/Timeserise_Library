@@ -91,6 +91,8 @@ class Model(nn.Module):
         dec_out = self.decoder(dec_in, enc_out)
         return dec_out
 
+        # return dec_out,attns
+
     def imputation(self, x_enc, x_mark_enc, x_dec, x_mark_dec, mask):
         # embedding
         x_enc, n_vars = self.enc_value_embedding(x_enc.permute(0, 2, 1))
@@ -131,7 +133,10 @@ class Model(nn.Module):
 
     def forward(self, x_enc, x_mark_enc, x_dec, x_mark_dec, mask=None):
         if self.task_name == 'long_term_forecast' or self.task_name == 'short_term_forecast':
+            # dec_out,attention = self.forecast(x_enc, x_mark_enc, x_dec, x_mark_dec)
             dec_out = self.forecast(x_enc, x_mark_enc, x_dec, x_mark_dec)
+
+            # return dec_out[:, -self.pred_len:, :],attention
             return dec_out[:, -self.pred_len:, :]  # [B, L, D]
         if self.task_name == 'imputation':
             dec_out = self.imputation(x_enc, x_mark_enc, x_dec, x_mark_dec, mask)

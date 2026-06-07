@@ -47,6 +47,12 @@ class scale_block(nn.Module):
                                                              d_ff, dropout))
 
     def forward(self, x, attn_mask=None, tau=None, delta=None):
+        ## x[1] will output the attention
+        if isinstance(x, tuple):
+            x, attention = x[0], x[1]
+        else:
+            attention = None
+
         _, ts_dim, _, _ = x.shape
 
         if self.merge_layer is not None:
@@ -55,8 +61,7 @@ class scale_block(nn.Module):
         for layer in self.encode_layers:
             x = layer(x)
 
-        return x, None
-
+        return x, attention
 
 class Encoder(nn.Module):
     def __init__(self, attn_layers):
@@ -65,13 +70,15 @@ class Encoder(nn.Module):
 
     def forward(self, x):
         encode_x = []
+        attention_list = []
         encode_x.append(x)
 
         for block in self.encode_blocks:
             x, attns = block(x)
+            attention_list.append(x)
             encode_x.append(x)
 
-        return encode_x, None
+        return encode_x, attention_list
 
 
 class DecoderLayer(nn.Module):
@@ -90,6 +97,10 @@ class DecoderLayer(nn.Module):
     def forward(self, x, cross):
         batch = x.shape[0]
         x = self.self_attention(x)
+        if isinstance(x, tuple):
+            x, attention = x[0], x[1]
+        else:
+            attention = None
         x = rearrange(x, 'b ts_d out_seg_num d_model -> (b ts_d) out_seg_num d_model')
 
         cross = rearrange(cross, 'b ts_d in_seg_num d_model -> (b ts_d) in_seg_num d_model')

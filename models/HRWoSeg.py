@@ -18,8 +18,8 @@ class Model(nn.Module):
         self.enc_in = configs.enc_in
         self.seq_len = configs.seq_len
         self.pred_len = configs.pred_len
-        self.seg_len = 12
-        self.win_size = 2
+        self.seg_len = 1
+        self.win_size = 1
         self.task_name = configs.task_name
 
         # The padding operation to handle invisible sgemnet length

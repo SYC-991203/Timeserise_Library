@@ -2,7 +2,9 @@ import os
 import torch
 from models import Autoformer, Transformer, TimesNet, Nonstationary_Transformer, DLinear, FEDformer, \
     Informer, LightTS, Reformer, ETSformer, Pyraformer, PatchTST, MICN, Crossformer, FiLM, iTransformer, \
-    Koopa,HalfRouterformer,MecHalfRouterFormer,Directionformer
+    Koopa,HalfRouterformer,MecHalfRouterFormer,Directionformer,HalfRouterformerWo1,HalfRouterformerWo2,\
+    HRWoSeg,RpoePatch,PromptCast,LMMoe,TLMMoe,TLMMoeED,TLMMoeEDW,TMMoeEDDecmRevin,SD_Informer,\
+    HGI,HGI_woCros,HGI_woEnc,HGI_woDec,HGI_GNN,HGI_PerGNN,DHSL,TimeMKG,HGI_PerHKGNN
 
 
 class Exp_Basic(object):
@@ -28,7 +30,30 @@ class Exp_Basic(object):
             'Koopa': Koopa,
             'HalfRouterformer':HalfRouterformer,
             'MecHalfRouterFormer':MecHalfRouterFormer,
-            'Directionformer':Directionformer
+            'HalfRouterformerWo1':HalfRouterformerWo1,
+            'HalfRouterformerWo2':HalfRouterformerWo2,
+            'Directionformer':Directionformer,
+            'HRWoSeg':HRWoSeg,
+            'RpoePatch':RpoePatch,
+            'PromptCast':PromptCast,
+            'LMMoe':LMMoe,
+            'TLMMoe':TLMMoe,
+            'TLMMoeED':TLMMoeED,
+            'TLMMoeEDW':TLMMoeEDW,
+            'TMMoeEDDecmRevin':TMMoeEDDecmRevin,
+            'SD_Informer':SD_Informer,
+            'HGI':HGI,
+            'HGI_woCros':HGI_woCros,
+            'HGI_woEnc':HGI_woEnc,
+            'HGI_woDec':HGI_woDec,
+            'HGI_GNN':HGI_GNN,
+            'HGI_PerGNN':HGI_PerGNN,
+            'DHSL':DHSL,
+            'TimeMKG':TimeMKG,
+            'HGI_PerHKGNN':HGI_PerHKGNN
+
+
+            
         }
         self.device = self._acquire_device()
         self.model = self._build_model().to(self.device)

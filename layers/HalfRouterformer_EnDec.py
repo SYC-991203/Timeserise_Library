@@ -88,6 +88,15 @@ class DecoderLayer(nn.Module):
         self.linear_pred = nn.Linear(d_model, seg_len)
 
     def forward(self, x, cross):
+        # # x = x[0]
+        # batch = x.shape[0]
+        # x = rearrange(x, 'b ts_d out_seg_num d_model -> (b ts_d) out_seg_num d_model')
+        # x = self.self_attention(x,x,x,None)
+        # if isinstance(x,tuple):
+        #     x = x[0]
+
+        # # cross = rearrange(cross, 'b ts_d in_seg_num d_model -> (b ts_d) in_seg_num d_model')
+        # tmp, attn = self.cross_attention(cross)
         batch = x.shape[0]
         x = self.self_attention(x)
         x = rearrange(x, 'b ts_d out_seg_num d_model -> (b ts_d) out_seg_num d_model')

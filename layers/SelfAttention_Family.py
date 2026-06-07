@@ -290,8 +290,8 @@ class TwoStageAttentionLayer(nn.Module):
         # Cross Dimension Stage: use a small set of learnable vectors to aggregate and distribute messages to build the D-to-D connection
         dim_send = rearrange(dim_in, '(b ts_d) seg_num d_model -> (b seg_num) ts_d d_model', b=batch)
         batch_router = repeat(self.router, 'seg_num factor d_model -> (repeat seg_num) factor d_model', repeat=batch)
-        dim_buffer, attn = self.dim_sender(batch_router, dim_send, dim_send, attn_mask=None, tau=None, delta=None)
-        dim_receive, attn = self.dim_receiver(dim_send, dim_buffer, dim_buffer, attn_mask=None, tau=None, delta=None)
+        dim_buffer, attn_sender = self.dim_sender(batch_router, dim_send, dim_send, attn_mask=None, tau=None, delta=None)
+        dim_receive, attn_recriver = self.dim_receiver(dim_send, dim_buffer, dim_buffer, attn_mask=None, tau=None, delta=None)
         dim_enc = dim_send + self.dropout(dim_receive)
         dim_enc = self.norm3(dim_enc)
         dim_enc = dim_enc + self.dropout(self.MLP2(dim_enc))
@@ -338,9 +338,11 @@ class HalfRouterAttentionLayer(nn.Module):
 
     def forward(self, x, attn_mask=None, tau=None, delta=None):
         # Cross Time Stage: Directly apply MSA to each dimension
-        batch = x.shape[0]
-        ts_d = x.shape[1] 
-        time_in = rearrange(x, 'b ts_d seg_num d_model -> (b ts_d) seg_num d_model')
+        if len(x.shape) == 4:
+            batch = x.shape[0]
+            ts_d = x.shape[1] 
+            time_in = rearrange(x, 'b ts_d seg_num d_model -> (b ts_d) seg_num d_model')
+        else: time_in = x
         time_enc, attn = self.time_attention(
             time_in, time_in, time_in, attn_mask=None, tau=None, delta=None
         )
@@ -384,6 +386,191 @@ class HalfRouterAttentionLayer(nn.Module):
 
 
         return final_out
+## 单纯去掉TSA部分，保留了seg部分
+class HalfRouterAttentionLayerWo1(nn.Module):
+    '''
+    The Two Stage Attention (TSA) Layer without time_attention
+    input/output shape: [batch_size, Data_dim(D), Seg_num(L), d_model]
+    '''
+
+    def __init__(self, configs,
+                 seg_num, factor, d_model, n_heads, d_ff=None, dropout=0.1):
+        super(HalfRouterAttentionLayerWo1, self).__init__()
+        d_ff = d_ff or 4 * d_model
+        # Removed time_attention
+        # self.time_attention = AttentionLayer(FullAttention(False, configs.factor, attention_dropout=configs.dropout,
+        #                                                    output_attention=configs.output_attention), d_model, n_heads)
+        self.local_full_attention =  AttentionLayer(FullAttention(False, configs.factor, attention_dropout=configs.dropout,
+                                                           output_attention=configs.output_attention), d_model, n_heads)
+        self.dim_sender = AttentionLayer(FullAttention(False, configs.factor, attention_dropout=configs.dropout,
+                                                       output_attention=configs.output_attention), d_model, n_heads)
+        self.dim_receiver = AttentionLayer(FullAttention(False, configs.factor, attention_dropout=configs.dropout,
+                                                         output_attention=configs.output_attention), d_model, n_heads)
+        self.router = nn.Parameter(torch.randn(seg_num, factor, d_model))
+
+        self.dropout = nn.Dropout(dropout)
+
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        self.norm3 = nn.LayerNorm(d_model)
+        self.norm4 = nn.LayerNorm(d_model)
+
+        self.MLP1 = nn.Sequential(nn.Linear(d_model, d_ff),
+                                  nn.GELU(),
+                                  nn.Linear(d_ff, d_model))
+        self.MLP2 = nn.Sequential(nn.Linear(d_model, d_ff),
+                                  nn.GELU(),
+                                  nn.Linear(d_ff, d_model))
+
+    def forward(self, x, attn_mask=None, tau=None, delta=None):
+        batch = x.shape[0]
+        ts_d = x.shape[1] 
+        time_in = rearrange(x, 'b ts_d seg_num d_model -> (b ts_d) seg_num d_model')
+
+        # Skipped time_attention
+        dim_in = time_in  # Directly use time_in
+
+        # Split the input into two parts
+        dim_in_first_half = dim_in[:3*batch, :, :]
+        dim_in_second_half = dim_in[3*batch:, :, :]
+
+        # Apply local_full_attention to the first half
+        local_dim_in_first_half = rearrange(dim_in_first_half, '(b ts_d) seg_num d_model -> (b seg_num) ts_d d_model', b=batch)
+        local_dim_enc, local_atten = self.local_full_attention(
+            local_dim_in_first_half, local_dim_in_first_half, local_dim_in_first_half,
+            attn_mask=None, tau=None, delta=None
+        )
+
+        local_dim_in = local_dim_in_first_half + self.dropout(local_dim_enc)
+        local_dim_in = self.norm1(local_dim_in)
+        local_dim_in = local_dim_in + self.dropout(self.MLP1(local_dim_in))
+        local_dim_in = self.norm2(local_dim_in)
+
+        # Concatenate the processed first half with the unprocessed second half
+        local_dim_out = rearrange(local_dim_in, '(b seg_num) ts_d d_model -> (b ts_d) seg_num d_model', b=batch)
+        local_out_cat = torch.cat([local_dim_out, dim_in_second_half], dim=0)
+
+        # Apply router attention
+        dim_send = rearrange(local_out_cat, '(b ts_d) seg_num d_model -> (b seg_num) ts_d d_model', b=batch)
+        batch_router = repeat(self.router, 'seg_num factor d_model -> (repeat seg_num) factor d_model', repeat=batch)
+
+        dim_buffer_first_half, attn = self.dim_sender(
+            batch_router, dim_send, dim_send, attn_mask=None, tau=None, delta=None
+        )
+        dim_receive_first_half, attn = self.dim_receiver(
+            dim_send, dim_buffer_first_half, dim_buffer_first_half, attn_mask=None, tau=None, delta=None
+        )
+
+        dim_enc_first_half = dim_send + self.dropout(dim_receive_first_half)
+        dim_enc_first_half = self.norm3(dim_enc_first_half)
+        dim_enc_first_half = dim_enc_first_half + self.dropout(self.MLP2(dim_enc_first_half))
+        dim_enc_first_half = self.norm4(dim_enc_first_half)
+
+        # Reshape to the original dimensions
+        dim_enc_first_half = rearrange(dim_enc_first_half, '(b seg_num) ts_d d_model -> (b ts_d) seg_num d_model', b=batch)
+        final_out = rearrange(dim_enc_first_half, '(b ts_d) seg_num d_model -> b ts_d seg_num d_model', b=batch)
+
+        return final_out
+    
+
+    
+class HalfRouterAttentionLayerWo2(nn.Module):
+    '''
+    Modified HalfRouterAttentionLayerWo1 without segmentation strategy.
+    Input/output shape: [batch_size, seq_len, d_model]
+    '''
+
+    def __init__(self, configs, seq_len, factor, d_model, n_heads, d_ff=None, dropout=0.1):
+        super(HalfRouterAttentionLayerWo2, self).__init__()
+        d_ff = d_ff or 4 * d_model
+
+        self.local_full_attention = AttentionLayer(
+            FullAttention(False, factor, attention_dropout=dropout,
+                          output_attention=configs.output_attention),
+            d_model, n_heads)
+        self.dim_sender = AttentionLayer(
+            FullAttention(False, factor, attention_dropout=dropout,
+                          output_attention=configs.output_attention),
+            d_model, n_heads)
+        self.dim_receiver = AttentionLayer(
+            FullAttention(False, factor, attention_dropout=dropout,
+                          output_attention=configs.output_attention),
+            d_model, n_heads)
+        self.router = nn.Parameter(torch.randn(factor, d_model))
+
+        self.dropout = nn.Dropout(dropout)
+
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        self.norm3 = nn.LayerNorm(d_model)
+        self.norm4 = nn.LayerNorm(d_model)
+
+        self.MLP1 = nn.Sequential(
+            nn.Linear(d_model, d_ff),
+            nn.GELU(),
+            nn.Linear(d_ff, d_model)
+        )
+        self.MLP2 = nn.Sequential(
+            nn.Linear(d_model, d_ff),
+            nn.GELU(),
+            nn.Linear(d_ff, d_model)
+        )
+
+    def forward(self, x, attn_mask=None, tau=None, delta=None):
+        # x shape: [B, L, d_model]
+        batch_size, seq_len, d_model = x.shape
+
+        # Reshape x to combine batch and sequence length
+        dim_in = x.reshape(-1, d_model)  # Shape: [B * L, d_model]
+
+        # Split the input into two parts
+        total_elements = dim_in.size(0)
+        first_half_elements = 3 * batch_size  # Assuming '3 * batch' as per original code
+        dim_in_first_half = dim_in[:first_half_elements, :]  # [First 3 * batch elements]
+        dim_in_second_half = dim_in[first_half_elements:, :]  # [Remaining elements]
+
+        # Process first half with local full attention
+        # Reshape back to [batch_size * 3, 1, d_model] (since we used 3 * batch_size)
+        first_half = dim_in_first_half.reshape(-1, 1, d_model)  # Shape: [3 * B, 1, d_model]
+
+        # Apply local full attention to the first half
+        local_enc, _ = self.local_full_attention(
+            first_half, first_half, first_half, attn_mask=attn_mask, tau=tau, delta=delta)
+
+        local_out = first_half + self.dropout(local_enc)
+        local_out = self.norm1(local_out)
+        local_out = local_out + self.dropout(self.MLP1(local_out))
+        local_out = self.norm2(local_out)
+
+        # Reshape second half back to appropriate shape
+        # Since the second half elements might not align neatly, we need to handle the dimensions carefully
+        # Let's assume we process it as is for this example
+
+        # Concatenate the processed first half with the unprocessed second half
+        combined = torch.cat([local_out.reshape(-1, d_model), dim_in_second_half], dim=0)  # [B * L, d_model]
+
+        # Reshape combined back to [B, L, d_model]
+        combined = combined.reshape(batch_size, seq_len, d_model)
+
+        # Apply router attention
+        dim_send = combined.transpose(1, 2)  # [B, d_model, L]
+
+        batch_router = self.router.unsqueeze(0).expand(batch_size, -1, -1)  # [B, factor, d_model]
+
+        dim_buffer, _ = self.dim_sender(
+            batch_router, dim_send, dim_send, attn_mask=attn_mask, tau=tau, delta=delta)
+        dim_receive, _ = self.dim_receiver(
+            dim_send, dim_buffer, dim_buffer, attn_mask=attn_mask, tau=tau, delta=delta)
+
+        dim_enc = dim_send + self.dropout(dim_receive)
+        dim_enc = self.norm3(dim_enc.transpose(1, 2))  # [B, L, d_model]
+        dim_enc = dim_enc + self.dropout(self.MLP2(dim_enc))
+        dim_enc = self.norm4(dim_enc)
+
+        return dim_enc  # [B, L, d_model]
+
+
+
 
 
 class DirectionAttentionLayerV0(nn.Module):

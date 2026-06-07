@@ -15,6 +15,211 @@ import json
 from utils.data_arg import get_circular_permutations
 warnings.filterwarnings('ignore')
 
+
+class Dataset_DYG_LLM(Dataset):
+    def __init__(self, root_path, flag='train', size=None,
+                 features='M', data_path='DYG_data_3.csv',
+                 target='zs', scale=True, timeenc=0, freq='h', seasonal_patterns=None,
+                 # 【新增参数】指定存放 embedding .npy 的文件夹
+                 embedding_root='/home/home_new/syc/code/Timeserise_Library/qwen_emb_2048'):
+        
+        # info
+        if size == None:
+            self.seq_len = 24 * 4 * 4
+            self.label_len = 24 * 4
+            self.pred_len = 24 * 4
+        else:
+            self.seq_len = size[0]
+            self.label_len = size[1]
+            self.pred_len = size[2]
+            
+        # init
+        assert flag in ['train', 'test', 'val']
+        type_map = {'train': 0, 'val': 1, 'test': 2}
+        self.set_type = type_map[flag]
+        self.flag = flag # 记录一下当前是 train 还是 val
+
+        self.features = features
+        self.target = target
+        self.scale = scale
+        self.timeenc = timeenc
+        self.freq = freq
+        
+        self.root_path = root_path
+        self.data_path = data_path
+        self.embedding_root = embedding_root # 保存 embedding 路径
+
+        self.__read_data__()
+        self.__load_embeddings__() # 【新增】加载对应的 Embedding
+
+    def __read_data__(self):
+        self.scaler = StandardScaler()
+        df_raw = pd.read_csv(os.path.join(self.root_path, self.data_path))
+        
+        # 1. 数据清洗 (保持之前的逻辑)
+        if 'date' in df_raw.columns:
+            df_stamp_raw = df_raw[['date']]
+            df_numeric = df_raw.drop(columns=['date'])
+        else:
+            df_numeric = df_raw.select_dtypes(include=[np.number])
+            dates = pd.date_range('1/1/2000', periods=len(df_raw), freq=self.freq)
+            df_stamp_raw = pd.DataFrame({'date': dates})
+
+        df_numeric = df_numeric.apply(pd.to_numeric, errors='coerce').fillna(0)
+
+        # 2. 划分 (Train/Val/Test)
+        num_train = int(len(df_numeric) * 0.7)
+        num_test = int(len(df_numeric) * 0.2)
+        num_vali = len(df_numeric) - num_train - num_test
+        
+        border1s = [0, num_train - self.seq_len, len(df_numeric) - num_test - self.seq_len]
+        border2s = [num_train, num_train + num_vali, len(df_numeric)]
+        
+        border1 = border1s[self.set_type]
+        border2 = border2s[self.set_type]
+
+        # 3. 特征选择
+        if self.features == 'M' or self.features == 'MS':
+            cols_data = df_numeric.columns
+            df_data = df_numeric[cols_data]
+        elif self.features == 'S':
+            cols_data = [self.target]
+            df_data = df_numeric[[self.target]]
+
+        # 4. Scale
+        if self.scale:
+            train_data = df_data[border1s[0]:border2s[0]]
+            self.scaler.fit(train_data.values)
+            data = self.scaler.transform(df_data.values)
+        else:
+            data = df_data.values
+
+        self.data_x = data[border1:border2]
+        self.data_y = data[border1:border2]
+
+        # 5. Time Encoding
+        df_stamp = df_stamp_raw[border1:border2]
+        df_stamp['date'] = pd.to_datetime(df_stamp.date)
+        if self.timeenc == 0:
+            df_stamp['month'] = df_stamp.date.apply(lambda row: row.month, 1)
+            df_stamp['day'] = df_stamp.date.apply(lambda row: row.day, 1)
+            df_stamp['weekday'] = df_stamp.date.apply(lambda row: row.weekday(), 1)
+            df_stamp['hour'] = df_stamp.date.apply(lambda row: row.hour, 1)
+            data_stamp = df_stamp.drop(columns=['date']).values
+        elif self.timeenc == 1:
+            data_stamp = np.zeros((len(df_stamp), 4))
+            
+        self.data_stamp = data_stamp
+
+    def __load_embeddings__(self):
+        """
+        【关键】直接加载 Step 3 生成的 .npy 文件
+        逻辑：自动根据 sub名称 和 flag 加载对应的文件
+        """
+        # 1. 解析 sub 名称 (e.g. "DYG_data_3_sub1.csv" -> "sub1")
+        # 你的命名规则可能不同，这里做一个简单的提取
+        sub_name = "sub1" # 默认 fallback
+        if "sub1" in self.data_path: sub_name = "sub1"
+        elif "sub2" in self.data_path: sub_name = "sub2"
+        elif "sub3" in self.data_path: sub_name = "sub3"
+        elif "sub4" in self.data_path: sub_name = "sub4"
+
+        # 2. 构造文件名
+        # 假设之前生成的文件名是 embeddings_sub1.npy (且只生成了训练集的)
+        # 如果你只跑了一次 generate，那么这个文件里只有训练集数据
+        # ⚠️ 重要提示：为了让 val/test 也能跑，你需要确保 embeddings 文件里对应的数据是存在的
+        
+        file_name = f"embeddings_{sub_name}_{self.flag}.npy" 
+        # 如果你分别生成了 embeddings_sub1_train.npy，请这里改成 f"embeddings_{sub_name}_{self.flag}.npy"
+
+        file_path = os.path.join(self.embedding_root, file_name)
+        
+        if not os.path.exists(file_path):
+            # 如果没找到，为了不报错卡死，生成一个全0的 dummy embedding (仅供调试)
+            print(f"⚠️ 警告: 未找到 Embedding 文件 {file_path}，使用全0替代！")
+            self.llm_embeddings = np.zeros((len(self.data_x), 2048), dtype=np.float32)
+        else:
+            print(f"✅ 成功加载 Semantic Embeddings: {file_path}")
+            emb_data = np.load(file_path)
+            
+            # 【对齐检查】
+            # 我们之前生成时是根据 loader 生成的，顺序和 Dataset 是一一对应的
+            # 但要注意：如果 embeddings_sub1.npy 是全量生成的，我们需要像切 data_x 一样切分它
+            # 如果 embeddings_sub1.npy 只是 train 部分，那它的长度应该等于 len(self.data_x)
+            
+            if len(emb_data) != len(self.data_x):
+                # 如果长度不一致，说明可能是全量生成的，尝试进行切片
+                # 这里的切片逻辑要和 __read_data__ 里的 border1:border2 一致
+                # 但这取决于你 Step 2 生成时是怎么喂数据的。
+                # 暂时假设：你生成的 embedding 刚好对应当前的 flag 数据集
+                target_len = len(self.data_x)
+                current_len = len(emb_data)
+                
+                if current_len != target_len:
+                    print(f"Warning: Embedding length ({current_len}) != Data length ({target_len}). Aligning...")
+                    
+                    if current_len < target_len:
+                        # 【情况 A：缺数据】 -> 补零
+                        diff = target_len - current_len
+                        # 获取 embedding 的维度 (例如 2048)
+                        emb_dim = emb_data.shape[1] 
+                        
+                        # 生成全0的补全块
+                        padding = np.zeros((diff, emb_dim), dtype=emb_data.dtype)
+                        
+                        # 拼接到末尾
+                        emb_data = np.concatenate((emb_data, padding), axis=0)
+                        print(f"  -> Padded {diff} zeros to the end.")
+                        
+                    elif current_len > target_len:
+                        # 【情况 B：数据多了】 -> 截断
+                        diff = current_len - target_len
+                        # 只保留前 target_len 个
+                        emb_data = emb_data[:target_len]
+                        print(f"  -> Truncated last {diff} samples.")
+            
+            # 转换为 Tensor 方便后续处理 (可选，也可以在 getitem 转)
+            self.llm_embeddings = emb_data
+
+    def __getitem__(self, index):
+        s_begin = index
+        s_end = s_begin + self.seq_len
+        r_begin = s_end - self.label_len
+        r_end = r_begin + self.label_len + self.pred_len
+
+        seq_x = self.data_x[s_begin:s_end]
+        seq_y = self.data_y[r_begin:r_end]
+        seq_x_mark = self.data_stamp[s_begin:s_end]
+        seq_y_mark = self.data_stamp[r_begin:r_end]
+        
+        # 获取 LLM Embedding
+        llm_emb = self.llm_embeddings[index] 
+        
+        # 【关键步骤】处理维度并拼接
+        # 情况A: 如果 llm_emb 是全局向量 (Shape: [d_model])，需要重复扩展到时间轴
+        if len(llm_emb.shape) == 1:
+            # 扩展为 (seq_len, d_model)
+            llm_emb_expanded = np.tile(llm_emb, (len(seq_x_mark), 1))
+        else:
+            # 情况B: 如果已经是 (seq_len, d_model)，直接用
+            llm_emb_expanded = llm_emb
+
+        # 将 embedding 拼接到 x_mark 的最后一个维度
+        # 假设 seq_x_mark 是 (96, 4), llm_emb 是 (96, 768)
+        # 拼接后 seq_x_mark_augmented 变成 (96, 772)
+        seq_x_mark_augmented = np.concatenate((seq_x_mark, llm_emb_expanded), axis=-1)
+
+        # 返回值依然是标准的 4 个，exp_main 毫无察觉
+        return seq_x, seq_y, seq_x_mark_augmented, seq_y_mark
+
+    def __len__(self):
+        # 这里的长度定义要小心，必须保证 llm_embeddings 不越界
+        # 通常 len(data_x) - seq_len - pred_len + 1
+        return len(self.data_x) - self.seq_len - self.pred_len + 1
+
+    def inverse_transform(self, data):
+        return self.scaler.inverse_transform(data)
+
 class Dataset_DYG_OneSTL(Dataset):
     def __init__(self, root_path, flag='train', size=None,
                  features='S', data_path='DYG_2-1_data.csv',
@@ -93,6 +298,8 @@ class Dataset_DYG_OneSTL(Dataset):
                         if keyword in self.target:
                             target_list =  [item for item in target_list_all if keyword in item]
                     print(self.target,target_list)
+            if self.target =="original":
+                target_list = ["jn","zt","ht","nn",'nd']
 
             if "order" in self.target:
                 per_map = get_circular_permutations(order_list)
@@ -396,7 +603,7 @@ class Dataset_DYG_u(Dataset):
 class Dataset_DYG_base(Dataset):## old dyg data_set
     def __init__(self, root_path, flag='train', size=None,
                  features='M', data_path='DYG_data_3.csv',
-                 target='zs', scale=True, timeenc=0, freq='h', seasonal_patterns=None,cut_off=None):
+                 target='zs', scale=True, timeenc=0, freq='h', seasonal_patterns=None,cut_off=None, model_name=None):
         # size [seq_len, label_len, pred_len]
         # info
         print("DYG_base")
@@ -419,6 +626,7 @@ class Dataset_DYG_base(Dataset):## old dyg data_set
         self.timeenc = timeenc
         self.freq = freq
         self.cut_off = cut_off
+        # self.model_name = model_name  # 添加模型名称参数
 
         self.root_path = root_path
         self.data_path = data_path
@@ -428,11 +636,17 @@ class Dataset_DYG_base(Dataset):## old dyg data_set
         self.scaler = StandardScaler()
         df_raw = pd.read_csv(os.path.join(self.root_path,
                                           self.data_path))
-        print(df_raw.shape)
-        if  self.cut_off!=None:
+        print("原始数据形状:", df_raw.shape)
+        
+        # 如果是 PromptCast 模型，只取前10%的数据
+        if self.target == 'PromptCastAPI':
+            ten_percent = int(len(df_raw) * 0.01)
+            df_raw = df_raw.head(ten_percent)
+            print(f"PromptCast模型，使用前10%数据: {df_raw.shape}")
+        
+        if self.cut_off != None:
             df_raw = df_raw[self.cut_off-1:]
-            print("cut_off:",df_raw.shape)
-
+            print("cut_off后:", df_raw.shape)
 
         num_train = int(len(df_raw) * 0.7)
         num_test = int(len(df_raw) * 0.2)
@@ -441,7 +655,6 @@ class Dataset_DYG_base(Dataset):## old dyg data_set
         border2s = [num_train, num_train + num_vali, len(df_raw)]
         border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
-
 
         if self.features == 'M' or self.features == 'MS':
             cols_data = df_raw.columns[1:]

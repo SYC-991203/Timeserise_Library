@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from einops import rearrange, repeat
 from layers.HalfRouterformer_EnDec import scale_block, Encoder, Decoder, DecoderLayer
 from layers.Embed import PatchEmbedding
-from layers.SelfAttention_Family import AttentionLayer, FullAttention, HalfRouterAttentionLayer
+from layers.SelfAttention_Family import *
 from models.PatchTST import FlattenHead
 from math import ceil
 
@@ -18,7 +18,7 @@ class Model(nn.Module):
         self.enc_in = configs.enc_in
         self.seq_len = configs.seq_len
         self.pred_len = configs.pred_len
-        self.seg_len = 12
+        self.seg_len = configs.seq_len
         self.win_size = 2
         self.task_name = configs.task_name
 
@@ -48,26 +48,10 @@ class Model(nn.Module):
         self.dec_pos_embedding = nn.Parameter(
             torch.randn(1, configs.enc_in, (self.pad_out_len // self.seg_len), configs.d_model))
 
-        # self.decoder = Decoder(
-        #     [
-        #         DecoderLayer(
-        #             AttentionLayer(
-        #                 FullAttention(
-        #                     False, configs.factor, attention_dropout=configs.dropout,output_attention=False
-        #                     ),
-        #                     configs.d_model, configs.n_heads),
-        #             HalfRouterAttentionLayer(configs, (self.pad_out_len // self.seg_len), configs.factor, configs.d_model, configs.n_heads,
-        #                                    configs.d_ff, configs.dropout),
-        #             self.seg_len,
-        #             configs.d_model,
-        #             configs.d_ff,
-        #             dropout=configs.dropout,
-        #             # activation=configs.activation,
-        #         )
         self.decoder = Decoder(
             [
                 DecoderLayer(
-                    HalfRouterAttentionLayer(configs, (self.pad_out_len // self.seg_len), configs.factor, configs.d_model, configs.n_heads,
+                    HalfRouterAttentionLayerWo2(configs, (self.pad_out_len // self.seg_len), configs.factor, configs.d_model, configs.n_heads,
                                            configs.d_ff, configs.dropout),
                     AttentionLayer(
                         FullAttention(False, configs.factor, attention_dropout=configs.dropout,
