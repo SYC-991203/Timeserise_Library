@@ -1,0 +1,123 @@
+True
+2.3.0
+True
+Args in experiment:
+Namespace(activation='gelu', anomaly_ratio=0.25, batch_size=256, c_out=5, channel_independent=1, checkpoints='./checkpoints/', d_ff=512, d_layers=1, d_model=1024, data='DYG_base', data_path='DYG_data_3_sub1.csv', dec_in=5, des='Exp', device_ids=[0, 1, 3], devices='0,1,3', direction=[1, 1, 2, 0, 0], distil=True, dropout=0.1, e_layers=2, embed='timeF', enc_in=5, enc_out=5, factor=3, features='M', freq='h', gpu=0, inverse=False, is_training=1, itr=1, label_len=48, learning_rate=0.0001, loss='MSE', lradj='type1', mask_rate=0.25, model='HGI_PerHKGNN', model_id='kdd_sub1_336', moe_logits_init='{\n    "0": {0: 5.0, 1: 1.0, 2: -5.0},  \n    "1": {0: 1.0, 1: 5.0, 2: -5.0},  \n    "2": {0: -5.0, 1: 1.0, 2: 5.0},  \n    "3": {0: -5.0, 1: 4.0, 2: 5.0},  \n    "4": {0: -5.0, 1: 4.0, 2: 5.0}\n}', moving_avg=25, n_heads=8, num_kernels=6, num_workers=10, output_attention=False, p_hidden_dims=[128, 128], p_hidden_layers=2, patience=3, pred_len=336, root_path='./data/DYG/KDD', seasonal_patterns='Monthly', seg_len=12, seq_len=96, target='g1', task_name='long_term_forecast', temp=1.0, top_k=5, train_epochs=10, use_amp=True, use_gpu=True, use_multi_gpu=True)
+Use GPU: cuda:0
+[HyperPearson] Dataset: sub1 | K-Groups: 1 | Hypergraph Built.
+>>>>>>>start training : long_term_forecast_kdd_sub1_336_HGI_PerHKGNN_DYG_base_ftM_sl96_ll48_pl336_dm1024_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Bacterial Density', 'Viscosity', 'Alcohol Addition', 'Reducing Sugar',
+       'Non Reducing Suger'],
+      dtype='object')
+train 75204
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Bacterial Density', 'Viscosity', 'Alcohol Addition', 'Reducing Sugar',
+       'Non Reducing Suger'],
+      dtype='object')
+val 10471
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Bacterial Density', 'Viscosity', 'Alcohol Addition', 'Reducing Sugar',
+       'Non Reducing Suger'],
+      dtype='object')
+test 21275
+	iters: 100, epoch: 1 | loss: 0.4655569
+	speed: 0.3016s/iter; left time: 853.9065s
+	iters: 200, epoch: 1 | loss: 0.6182733
+	speed: 0.2635s/iter; left time: 719.7097s
+Epoch: 1 cost time: 80.73327231407166
+Epoch: 1, Steps: 293 | Train Loss: 0.6038315 Vali Loss: 0.4173921 Test Loss: 0.3571921
+Validation loss decreased (inf --> 0.417392).  Saving model ...
+Updating learning rate to 0.0001
+	iters: 100, epoch: 2 | loss: 0.5122510
+	speed: 5.5891s/iter; left time: 14185.0553s
+	iters: 200, epoch: 2 | loss: 0.6020147
+	speed: 0.2629s/iter; left time: 641.0402s
+Epoch: 2 cost time: 79.88216423988342
+Epoch: 2, Steps: 293 | Train Loss: 0.5269519 Vali Loss: 0.4145633 Test Loss: 0.3758115
+Validation loss decreased (0.417392 --> 0.414563).  Saving model ...
+Updating learning rate to 5e-05
+	iters: 100, epoch: 3 | loss: 0.5232121
+	speed: 4.8214s/iter; left time: 10824.1440s
+	iters: 200, epoch: 3 | loss: 0.4851028
+	speed: 0.2537s/iter; left time: 544.2504s
+Epoch: 3 cost time: 75.7729561328888
+Epoch: 3, Steps: 293 | Train Loss: 0.5089340 Vali Loss: 0.4045972 Test Loss: 0.3776197
+Validation loss decreased (0.414563 --> 0.404597).  Saving model ...
+Updating learning rate to 2.5e-05
+	iters: 100, epoch: 4 | loss: 0.5005498
+	speed: 6.5095s/iter; left time: 12706.5513s
+	iters: 200, epoch: 4 | loss: 0.5296485
+	speed: 0.2503s/iter; left time: 463.4808s
+Epoch: 4 cost time: 76.08939790725708
+Epoch: 4, Steps: 293 | Train Loss: 0.4994917 Vali Loss: 0.4078261 Test Loss: 0.3909205
+EarlyStopping counter: 1 out of 3
+Updating learning rate to 1.25e-05
+	iters: 100, epoch: 5 | loss: 0.4097809
+	speed: 4.1010s/iter; left time: 6803.6091s
+	iters: 200, epoch: 5 | loss: 0.5489510
+	speed: 0.2693s/iter; left time: 419.8368s
+Epoch: 5 cost time: 77.79461860656738
+Epoch: 5, Steps: 293 | Train Loss: 0.4927118 Vali Loss: 0.4125677 Test Loss: 0.3961588
+EarlyStopping counter: 2 out of 3
+Updating learning rate to 6.25e-06
+	iters: 100, epoch: 6 | loss: 0.4350869
+	speed: 6.6733s/iter; left time: 9115.7427s
+	iters: 200, epoch: 6 | loss: 0.4262061
+	speed: 0.2508s/iter; left time: 317.5555s
+Epoch: 6 cost time: 78.567702293396
+Epoch: 6, Steps: 293 | Train Loss: 0.4881552 Vali Loss: 0.4108090 Test Loss: 0.4028921
+EarlyStopping counter: 3 out of 3
+Early stopping
+Updating learning rate to 3.125e-06
+	iters: 100, epoch: 7 | loss: 0.5558723
+	speed: 6.0226s/iter; left time: 6462.2515s
+	iters: 200, epoch: 7 | loss: 0.3936329
+	speed: 0.2451s/iter; left time: 238.4386s
+Epoch: 7 cost time: 75.00755095481873
+Epoch: 7, Steps: 293 | Train Loss: 0.4847807 Vali Loss: 0.4078693 Test Loss: 0.4015113
+EarlyStopping counter: 4 out of 3
+Early stopping
+Updating learning rate to 1.5625e-06
+	iters: 100, epoch: 8 | loss: 0.3953535
+	speed: 4.7592s/iter; left time: 3712.2088s
+	iters: 200, epoch: 8 | loss: 0.3726590
+	speed: 0.2443s/iter; left time: 166.1473s
+Epoch: 8 cost time: 73.39662384986877
+Epoch: 8, Steps: 293 | Train Loss: 0.4834771 Vali Loss: 0.4096926 Test Loss: 0.4100509
+EarlyStopping counter: 5 out of 3
+Early stopping
+Updating learning rate to 7.8125e-07
+	iters: 100, epoch: 9 | loss: 0.3631441
+	speed: 5.4189s/iter; left time: 2639.0114s
+	iters: 200, epoch: 9 | loss: 0.4588469
+	speed: 0.2317s/iter; left time: 89.6530s
+Epoch: 9 cost time: 72.57756066322327
+Epoch: 9, Steps: 293 | Train Loss: 0.4823826 Vali Loss: 0.4100785 Test Loss: 0.4100995
+EarlyStopping counter: 6 out of 3
+Early stopping
+Updating learning rate to 3.90625e-07
+	iters: 100, epoch: 10 | loss: 0.4855720
+	speed: 3.8185s/iter; left time: 740.7971s
+	iters: 200, epoch: 10 | loss: 0.5283069
+	speed: 0.2252s/iter; left time: 21.1723s
+Epoch: 10 cost time: 67.73070120811462
+Epoch: 10, Steps: 293 | Train Loss: 0.4821850 Vali Loss: 0.4095884 Test Loss: 0.4109241
+EarlyStopping counter: 7 out of 3
+Early stopping
+Updating learning rate to 1.953125e-07
+>>>>>>>testing : long_term_forecast_kdd_sub1_336_HGI_PerHKGNN_DYG_base_ftM_sl96_ll48_pl336_dm1024_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Bacterial Density', 'Viscosity', 'Alcohol Addition', 'Reducing Sugar',
+       'Non Reducing Suger'],
+      dtype='object')
+test 21275
+test shape: (21275, 1, 336, 5) (21275, 1, 336, 5)
+test shape: (21275, 336, 5) (21275, 336, 5)
+mae:0.3878, mse:0.3776
+(21275, 336, 5)
+(21275, 336, 5)

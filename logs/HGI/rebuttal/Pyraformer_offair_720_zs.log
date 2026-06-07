@@ -1,0 +1,132 @@
+True
+2.3.0
+True
+Args in experiment:
+Namespace(activation='gelu', anomaly_ratio=0.25, batch_size=256, c_out=5, channel_independent=1, checkpoints='./checkpoints/', d_ff=512, d_layers=1, d_model=1024, data='DYG_base', data_path='EDA_offair.csv', dec_in=5, des='Exp', device_ids=[4, 5, 7], devices='4,5,7', direction=[1, 1, 2, 0, 0], distil=True, dropout=0.1, e_layers=2, embed='timeF', enc_in=5, enc_out=5, factor=3, features='M', freq='h', gpu=4, inverse=False, is_training=1, itr=1, label_len=48, learning_rate=0.0001, loss='MSE', lradj='type1', mask_rate=0.25, model='Pyraformer', model_id='kdd_offair_720', moe_logits_init='{\n    "0": {0: 5.0, 1: 1.0, 2: -5.0},  \n    "1": {0: 1.0, 1: 5.0, 2: -5.0},  \n    "2": {0: -5.0, 1: 1.0, 2: 5.0},  \n    "3": {0: -5.0, 1: 4.0, 2: 5.0},  \n    "4": {0: -5.0, 1: 4.0, 2: 5.0}\n}', moving_avg=25, n_heads=8, num_kernels=6, num_workers=10, output_attention=False, p_hidden_dims=[128, 128], p_hidden_layers=2, patience=3, pred_len=720, root_path='./data/public', seasonal_patterns='Monthly', seg_len=12, seq_len=96, target='zs', task_name='long_term_forecast', temp=1.0, top_k=5, train_epochs=10, use_amp=True, use_gpu=True, use_multi_gpu=True)
+Use GPU: cuda:4
+>>>>>>>start training : long_term_forecast_kdd_offair_720_Pyraformer_DYG_base_ftM_sl96_ll48_pl720_dm1024_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+DYG_base
+原始数据形状: (113935, 6)
+Index(['pH', 'CO2', 'OUR', 'O2', 'CER'], dtype='object')
+train 78939
+DYG_base
+原始数据形状: (113935, 6)
+Index(['pH', 'CO2', 'OUR', 'O2', 'CER'], dtype='object')
+val 10675
+DYG_base
+原始数据形状: (113935, 6)
+Index(['pH', 'CO2', 'OUR', 'O2', 'CER'], dtype='object')
+test 22068
+	iters: 100, epoch: 1 | loss: 0.6382487
+	speed: 0.1985s/iter; left time: 591.7188s
+	iters: 200, epoch: 1 | loss: 0.5186910
+	speed: 0.1728s/iter; left time: 497.9682s
+	iters: 300, epoch: 1 | loss: 0.5548706
+	speed: 0.1734s/iter; left time: 482.1959s
+Epoch: 1 cost time: 55.883641481399536
+Epoch: 1, Steps: 308 | Train Loss: 0.5819241 Vali Loss: 0.3743033 Test Loss: 1.1070712
+Validation loss decreased (inf --> 0.374303).  Saving model ...
+Updating learning rate to 0.0001
+	iters: 100, epoch: 2 | loss: 0.5608677
+	speed: 1.8656s/iter; left time: 4986.6859s
+	iters: 200, epoch: 2 | loss: 0.5104021
+	speed: 0.1889s/iter; left time: 485.9529s
+	iters: 300, epoch: 2 | loss: 0.4620275
+	speed: 0.1884s/iter; left time: 465.8450s
+Epoch: 2 cost time: 60.12335228919983
+Epoch: 2, Steps: 308 | Train Loss: 0.5024973 Vali Loss: 0.3683338 Test Loss: 1.0777709
+Validation loss decreased (0.374303 --> 0.368334).  Saving model ...
+Updating learning rate to 5e-05
+	iters: 100, epoch: 3 | loss: 0.5133713
+	speed: 2.1072s/iter; left time: 4983.4918s
+	iters: 200, epoch: 3 | loss: 0.4847744
+	speed: 0.1623s/iter; left time: 367.6200s
+	iters: 300, epoch: 3 | loss: 0.4377764
+	speed: 0.1675s/iter; left time: 362.6994s
+Epoch: 3 cost time: 51.0392951965332
+Epoch: 3, Steps: 308 | Train Loss: 0.4726339 Vali Loss: 0.3674877 Test Loss: 1.0993100
+Validation loss decreased (0.368334 --> 0.367488).  Saving model ...
+Updating learning rate to 2.5e-05
+	iters: 100, epoch: 4 | loss: 0.4614828
+	speed: 1.5590s/iter; left time: 3206.8595s
+	iters: 200, epoch: 4 | loss: 0.4229264
+	speed: 0.2021s/iter; left time: 395.6065s
+	iters: 300, epoch: 4 | loss: 0.3962806
+	speed: 0.2146s/iter; left time: 398.5139s
+Epoch: 4 cost time: 61.050416707992554
+Epoch: 4, Steps: 308 | Train Loss: 0.4553525 Vali Loss: 0.3613517 Test Loss: 1.0945184
+Validation loss decreased (0.367488 --> 0.361352).  Saving model ...
+Updating learning rate to 1.25e-05
+	iters: 100, epoch: 5 | loss: 0.3883828
+	speed: 3.1576s/iter; left time: 5522.7103s
+	iters: 200, epoch: 5 | loss: 0.5486529
+	speed: 0.1911s/iter; left time: 315.1196s
+	iters: 300, epoch: 5 | loss: 0.3949268
+	speed: 0.1652s/iter; left time: 255.8309s
+Epoch: 5 cost time: 58.11666464805603
+Epoch: 5, Steps: 308 | Train Loss: 0.4434631 Vali Loss: 0.3559927 Test Loss: 1.0902658
+Validation loss decreased (0.361352 --> 0.355993).  Saving model ...
+Updating learning rate to 6.25e-06
+	iters: 100, epoch: 6 | loss: 0.3686090
+	speed: 2.2069s/iter; left time: 3180.0717s
+	iters: 200, epoch: 6 | loss: 0.4240662
+	speed: 0.1685s/iter; left time: 226.0083s
+	iters: 300, epoch: 6 | loss: 0.4684150
+	speed: 0.1690s/iter; left time: 209.7163s
+Epoch: 6 cost time: 53.17718839645386
+Epoch: 6, Steps: 308 | Train Loss: 0.4368099 Vali Loss: 0.3603101 Test Loss: 1.0840249
+EarlyStopping counter: 1 out of 3
+Updating learning rate to 3.125e-06
+	iters: 100, epoch: 7 | loss: 0.4114633
+	speed: 2.2144s/iter; left time: 2508.9407s
+	iters: 200, epoch: 7 | loss: 0.3643965
+	speed: 0.1702s/iter; left time: 175.7882s
+	iters: 300, epoch: 7 | loss: 0.4824930
+	speed: 0.1677s/iter; left time: 156.4635s
+Epoch: 7 cost time: 52.46859121322632
+Epoch: 7, Steps: 308 | Train Loss: 0.4332308 Vali Loss: 0.3609869 Test Loss: 1.0821936
+EarlyStopping counter: 2 out of 3
+Updating learning rate to 1.5625e-06
+	iters: 100, epoch: 8 | loss: 0.4949675
+	speed: 2.1566s/iter; left time: 1779.1936s
+	iters: 200, epoch: 8 | loss: 0.4056325
+	speed: 0.1706s/iter; left time: 123.7182s
+	iters: 300, epoch: 8 | loss: 0.4070526
+	speed: 0.1756s/iter; left time: 109.7383s
+Epoch: 8 cost time: 53.59282183647156
+Epoch: 8, Steps: 308 | Train Loss: 0.4320095 Vali Loss: 0.3596817 Test Loss: 1.0835040
+EarlyStopping counter: 3 out of 3
+Early stopping
+Updating learning rate to 7.8125e-07
+	iters: 100, epoch: 9 | loss: 0.4044166
+	speed: 2.1139s/iter; left time: 1092.9056s
+	iters: 200, epoch: 9 | loss: 0.4260209
+	speed: 0.1709s/iter; left time: 71.2493s
+	iters: 300, epoch: 9 | loss: 0.5309294
+	speed: 0.1717s/iter; left time: 54.4298s
+Epoch: 9 cost time: 52.79118037223816
+Epoch: 9, Steps: 308 | Train Loss: 0.4308398 Vali Loss: 0.3622057 Test Loss: 1.0813471
+EarlyStopping counter: 4 out of 3
+Early stopping
+Updating learning rate to 3.90625e-07
+	iters: 100, epoch: 10 | loss: 0.5059301
+	speed: 1.9976s/iter; left time: 417.5030s
+	iters: 200, epoch: 10 | loss: 0.4581324
+	speed: 0.1671s/iter; left time: 18.2091s
+	iters: 300, epoch: 10 | loss: 0.4690671
+	speed: 0.1755s/iter; left time: 1.5791s
+Epoch: 10 cost time: 52.63698077201843
+Epoch: 10, Steps: 308 | Train Loss: 0.4308980 Vali Loss: 0.3613504 Test Loss: 1.0816507
+EarlyStopping counter: 5 out of 3
+Early stopping
+Updating learning rate to 1.953125e-07
+>>>>>>>testing : long_term_forecast_kdd_offair_720_Pyraformer_DYG_base_ftM_sl96_ll48_pl720_dm1024_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+DYG_base
+原始数据形状: (113935, 6)
+Index(['pH', 'CO2', 'OUR', 'O2', 'CER'], dtype='object')
+test 22068
+test shape: (22068, 1, 720, 5) (22068, 1, 720, 5)
+test shape: (22068, 720, 5) (22068, 720, 5)
+mae:0.4962, mse:1.0903
+(22068, 720, 5)
+(22068, 720, 5)

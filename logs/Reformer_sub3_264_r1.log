@@ -1,0 +1,123 @@
+True
+2.3.0
+True
+Args in experiment:
+Namespace(activation='gelu', anomaly_ratio=0.25, batch_size=256, c_out=5, channel_independent=1, checkpoints='./checkpoints/', d_ff=512, d_layers=1, d_model=512, data='DYG_base', data_path='DYG_data_3_sub3.csv', dec_in=5, des='Exp', device_ids=[0, 1, 2, 3], devices='0,1,2,3', direction=[0, 0, 0, 1, 1], distil=True, dropout=0.1, e_layers=2, embed='timeF', enc_in=5, enc_out=5, factor=3, features='M', freq='h', gpu=0, inverse=False, is_training=1, itr=1, label_len=132, learning_rate=0.0001, loss='MSE', lradj='type1', mask_rate=0.25, model='Reformer', model_id='kdd_sub3_264', moe_logits_init='{"0": [3.0, -3.0], "1": [0.0, 0.0]}', moving_avg=25, n_heads=8, num_kernels=6, num_workers=10, output_attention=False, p_hidden_dims=[128, 128], p_hidden_layers=2, patience=3, pred_len=96, root_path='./data/DYG/KDD', seasonal_patterns='Monthly', seg_len=12, seq_len=264, target='r1', task_name='long_term_forecast', temp=1.0, top_k=5, train_epochs=10, use_amp=True, use_gpu=True, use_multi_gpu=True)
+Use GPU: cuda:0
+>>> Total Params: 2,641,925
+>>> Trainable Params: 2,641,925
+>>>>>>>start training : long_term_forecast_kdd_sub3_264_Reformer_DYG_base_ftM_sl264_ll132_pl96_dm512_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Bacterial Density', 'Viscosity', 'Chemical Efficiency', 'pH Online',
+       'Total Sugar'],
+      dtype='object')
+train 75276
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Bacterial Density', 'Viscosity', 'Chemical Efficiency', 'pH Online',
+       'Total Sugar'],
+      dtype='object')
+val 10711
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Bacterial Density', 'Viscosity', 'Chemical Efficiency', 'pH Online',
+       'Total Sugar'],
+      dtype='object')
+test 21515
+	iters: 100, epoch: 1 | loss: 0.7523699 | Mem: 2195MB(Max:2456MB)
+	speed: 0.1171s/iter; left time: 332.5961s
+	iters: 200, epoch: 1 | loss: 0.5439402 | Mem: 2195MB(Max:2456MB)
+	speed: 0.0907s/iter; left time: 248.5446s
+Epoch: 1 cost time: 29.44970989227295
+Epoch: 1, Steps: 294 | Train Loss: 0.7468492 Vali Loss: 0.3614642 Test Loss: 4.1560774
+Validation loss decreased (inf --> 0.361464).  Saving model ...
+Updating learning rate to 0.0001
+	iters: 100, epoch: 2 | loss: 0.3001325 | Mem: 2203MB(Max:2463MB)
+	speed: 1.7932s/iter; left time: 4567.3779s
+	iters: 200, epoch: 2 | loss: 0.6753458 | Mem: 2203MB(Max:2463MB)
+	speed: 0.0898s/iter; left time: 219.7851s
+Epoch: 2 cost time: 27.013184309005737
+Epoch: 2, Steps: 294 | Train Loss: 0.5787746 Vali Loss: 0.3444372 Test Loss: 4.0937042
+Validation loss decreased (0.361464 --> 0.344437).  Saving model ...
+Updating learning rate to 5e-05
+	iters: 100, epoch: 3 | loss: 0.6593112 | Mem: 2203MB(Max:2463MB)
+	speed: 1.8105s/iter; left time: 4079.0145s
+	iters: 200, epoch: 3 | loss: 0.4757761 | Mem: 2203MB(Max:2463MB)
+	speed: 0.0914s/iter; left time: 196.8017s
+Epoch: 3 cost time: 26.81134009361267
+Epoch: 3, Steps: 294 | Train Loss: 0.5529192 Vali Loss: 0.3516392 Test Loss: 4.0185156
+EarlyStopping counter: 1 out of 3
+Updating learning rate to 2.5e-05
+	iters: 100, epoch: 4 | loss: 0.2710378 | Mem: 2203MB(Max:2463MB)
+	speed: 1.7106s/iter; left time: 3350.9922s
+	iters: 200, epoch: 4 | loss: 0.6139749 | Mem: 2203MB(Max:2463MB)
+	speed: 0.0899s/iter; left time: 167.1775s
+Epoch: 4 cost time: 27.06574058532715
+Epoch: 4, Steps: 294 | Train Loss: 0.5415234 Vali Loss: 0.3450585 Test Loss: 4.0453591
+EarlyStopping counter: 2 out of 3
+Updating learning rate to 1.25e-05
+	iters: 100, epoch: 5 | loss: 0.3524213 | Mem: 2203MB(Max:2463MB)
+	speed: 1.7800s/iter; left time: 2963.7211s
+	iters: 200, epoch: 5 | loss: 0.4358748 | Mem: 2203MB(Max:2463MB)
+	speed: 0.0913s/iter; left time: 142.9502s
+Epoch: 5 cost time: 27.146260976791382
+Epoch: 5, Steps: 294 | Train Loss: 0.5358184 Vali Loss: 0.3409848 Test Loss: 4.1167073
+Validation loss decreased (0.344437 --> 0.340985).  Saving model ...
+Updating learning rate to 6.25e-06
+	iters: 100, epoch: 6 | loss: 0.5115083 | Mem: 2203MB(Max:2463MB)
+	speed: 1.9362s/iter; left time: 2654.4632s
+	iters: 200, epoch: 6 | loss: 0.5698383 | Mem: 2203MB(Max:2463MB)
+	speed: 0.0949s/iter; left time: 120.5665s
+Epoch: 6 cost time: 28.80302667617798
+Epoch: 6, Steps: 294 | Train Loss: 0.5327687 Vali Loss: 0.3389876 Test Loss: 4.0656023
+Validation loss decreased (0.340985 --> 0.338988).  Saving model ...
+Updating learning rate to 3.125e-06
+	iters: 100, epoch: 7 | loss: 0.2726923 | Mem: 2203MB(Max:2463MB)
+	speed: 1.9036s/iter; left time: 2050.1776s
+	iters: 200, epoch: 7 | loss: 0.8033056 | Mem: 2203MB(Max:2463MB)
+	speed: 0.0966s/iter; left time: 94.4079s
+Epoch: 7 cost time: 28.111954927444458
+Epoch: 7, Steps: 294 | Train Loss: 0.5315081 Vali Loss: 0.3436114 Test Loss: 4.0703273
+EarlyStopping counter: 1 out of 3
+Updating learning rate to 1.5625e-06
+	iters: 100, epoch: 8 | loss: 0.3622484 | Mem: 2203MB(Max:2463MB)
+	speed: 1.8669s/iter; left time: 1461.7512s
+	iters: 200, epoch: 8 | loss: 0.9521218 | Mem: 2203MB(Max:2463MB)
+	speed: 0.0917s/iter; left time: 62.6130s
+Epoch: 8 cost time: 27.40798544883728
+Epoch: 8, Steps: 294 | Train Loss: 0.5308857 Vali Loss: 0.3431099 Test Loss: 4.0638089
+EarlyStopping counter: 2 out of 3
+Updating learning rate to 7.8125e-07
+	iters: 100, epoch: 9 | loss: 0.2782286 | Mem: 2203MB(Max:2463MB)
+	speed: 1.9127s/iter; left time: 935.3013s
+	iters: 200, epoch: 9 | loss: 0.6127009 | Mem: 2203MB(Max:2463MB)
+	speed: 0.0927s/iter; left time: 36.0503s
+Epoch: 9 cost time: 27.267637968063354
+Epoch: 9, Steps: 294 | Train Loss: 0.5303755 Vali Loss: 0.3403740 Test Loss: 4.0688562
+EarlyStopping counter: 3 out of 3
+Early stopping
+Updating learning rate to 3.90625e-07
+	iters: 100, epoch: 10 | loss: 0.5300239 | Mem: 2203MB(Max:2463MB)
+	speed: 1.9672s/iter; left time: 383.6044s
+	iters: 200, epoch: 10 | loss: 0.4306644 | Mem: 2203MB(Max:2463MB)
+	speed: 0.1011s/iter; left time: 9.6077s
+Epoch: 10 cost time: 31.01565980911255
+Epoch: 10, Steps: 294 | Train Loss: 0.5298458 Vali Loss: 0.3409701 Test Loss: 4.0679922
+EarlyStopping counter: 4 out of 3
+Early stopping
+Updating learning rate to 1.953125e-07
+>>>>>>> Training Total Time: 1953.52 seconds <<<<<<<
+>>>>>>>testing : long_term_forecast_kdd_sub3_264_Reformer_DYG_base_ftM_sl264_ll132_pl96_dm512_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Bacterial Density', 'Viscosity', 'Chemical Efficiency', 'pH Online',
+       'Total Sugar'],
+      dtype='object')
+test 21515
+test shape: (21515, 1, 96, 5) (21515, 1, 96, 5)
+test shape: (21515, 96, 5) (21515, 96, 5)
+mae:0.4897, mse:4.0536
+>>>>>>> Test Total Time: 332.28 seconds <<<<<<<
+(21515, 96, 5)
+(21515, 96, 5)

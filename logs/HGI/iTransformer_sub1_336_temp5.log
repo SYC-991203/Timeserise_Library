@@ -1,0 +1,52 @@
+True
+2.3.0
+True
+Args in experiment:
+Namespace(activation='gelu', anomaly_ratio=0.25, batch_size=256, c_out=5, channel_independent=1, checkpoints='./checkpoints/', d_ff=512, d_layers=1, d_model=1024, data='DYG_base', data_path='DYG_data_3_sub1.csv', dec_in=5, des='Exp', device_ids=[1, 2, 3, 4], devices='1,2,3,4', direction=[1, 1, 2, 0, 0], distil=True, dropout=0.1, e_layers=2, embed='timeF', enc_in=5, enc_out=5, factor=3, features='M', freq='h', gpu=1, inverse=False, is_training=1, itr=1, label_len=48, learning_rate=0.0001, loss='MSE', lradj='type1', mask_rate=0.25, model='iTransformer', model_id='kdd_sub1_336', moe_logits_init='{\n    "0": {0: 5.0, 1: 1.0, 2: -5.0},  \n    "1": {0: 1.0, 1: 5.0, 2: -5.0},  \n    "2": {0: -5.0, 1: 1.0, 2: 5.0},  \n    "3": {0: -5.0, 1: 4.0, 2: 5.0},  \n    "4": {0: -5.0, 1: 4.0, 2: 5.0}\n}', moving_avg=25, n_heads=8, num_kernels=6, num_workers=10, output_attention=False, p_hidden_dims=[128, 128], p_hidden_layers=2, patience=3, pred_len=336, root_path='./data/DYG/KDD', seasonal_patterns='Monthly', seg_len=12, seq_len=96, target='temp5', task_name='long_term_forecast', top_k=5, train_epochs=10, use_amp=True, use_gpu=True, use_multi_gpu=True)
+Use GPU: cuda:1
+>>>>>>>start training : long_term_forecast_kdd_sub1_336_iTransformer_DYG_base_ftM_sl96_ll48_pl336_dm1024_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Bacterial Density', 'Viscosity', 'Alcohol Addition', 'Reducing Sugar',
+       'Non Reducing Suger'],
+      dtype='object')
+train 75204
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Bacterial Density', 'Viscosity', 'Alcohol Addition', 'Reducing Sugar',
+       'Non Reducing Suger'],
+      dtype='object')
+val 10471
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Bacterial Density', 'Viscosity', 'Alcohol Addition', 'Reducing Sugar',
+       'Non Reducing Suger'],
+      dtype='object')
+test 21275
+	iters: 100, epoch: 1 | loss: 0.7067342
+	speed: 0.1531s/iter; left time: 433.3627s
+	iters: 200, epoch: 1 | loss: 0.7317629
+	speed: 0.1302s/iter; left time: 355.6729s
+Epoch: 1 cost time: 43.679261445999146
+Traceback (most recent call last):
+  File "run.py", line 167, in <module>
+    exp.train(setting)
+  File "/home/home_new/syc/code/Timeserise_Library/exp/exp_long_term_forecasting.py", line 268, in train
+    test_loss, test_time = self.vali(test_data, test_loader, criterion)
+  File "/home/home_new/syc/code/Timeserise_Library/exp/exp_long_term_forecasting.py", line 143, in vali
+    outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+  File "/home/home_new/syc/anaconda3/envs/py38torch121/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/home_new/syc/anaconda3/envs/py38torch121/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/home_new/syc/anaconda3/envs/py38torch121/lib/python3.8/site-packages/torch/nn/parallel/data_parallel.py", line 184, in forward
+    replicas = self.replicate(self.module, self.device_ids[:len(inputs)])
+  File "/home/home_new/syc/anaconda3/envs/py38torch121/lib/python3.8/site-packages/torch/nn/parallel/data_parallel.py", line 189, in replicate
+    return replicate(module, device_ids, not torch.is_grad_enabled())
+  File "/home/home_new/syc/anaconda3/envs/py38torch121/lib/python3.8/site-packages/torch/nn/parallel/replicate.py", line 110, in replicate
+    param_copies = _broadcast_coalesced_reshape(params, devices, detach)
+  File "/home/home_new/syc/anaconda3/envs/py38torch121/lib/python3.8/site-packages/torch/nn/parallel/replicate.py", line 79, in _broadcast_coalesced_reshape
+    return comm.broadcast_coalesced(tensors, devices)
+  File "/home/home_new/syc/anaconda3/envs/py38torch121/lib/python3.8/site-packages/torch/nn/parallel/comm.py", line 57, in broadcast_coalesced
+    return torch._C._broadcast_coalesced(tensors, devices, buffer_size)
+RuntimeError: NCCL Error 1: unhandled cuda error (run with NCCL_DEBUG=INFO for details)

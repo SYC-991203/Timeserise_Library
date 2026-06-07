@@ -1,0 +1,129 @@
+True
+2.3.0
+True
+Args in experiment:
+Namespace(activation='gelu', anomaly_ratio=0.25, batch_size=256, c_out=5, channel_independent=1, checkpoints='./checkpoints/', d_ff=512, d_layers=1, d_model=64, data='DYG_LLM', data_path='EDA_femprocess_v2.csv', dec_in=5, des='Exp', device_ids=[0, 1, 2, 3], devices='0,1,2,3', direction=[1, 1, 2, 0, 2], distil=True, dropout=0.1, e_layers=2, embed='timeF', enc_in=5, enc_out=5, factor=3, features='M', freq='h', gpu=0, inverse=False, is_training=1, itr=1, label_len=48, learning_rate=0.0001, loss='MSE', lradj='type1', mask_rate=0.25, model='TimeMKG', model_id='kdd_femprocess_336', moe_logits_init='{\n    "0": {0: 3.0, 1: 2.0, 2: 5.0},\n    "1": {0: 5.0, 1: 3.0, 2: 1.0},\n    "2": {0: 2.0, 1: 5.0, 2: 3.0}, \n    "3": {0: -5.0, 1: 3.0, 2: 5.0},\n    "4": {0: 5.0, 1: 4.0, 2: -5.0}\n}', moving_avg=25, n_heads=8, num_kernels=6, num_workers=10, output_attention=False, p_hidden_dims=[128, 128], p_hidden_layers=2, patience=3, pred_len=336, root_path='./data/public', seasonal_patterns='Monthly', seg_len=12, seq_len=96, target='v2', task_name='long_term_forecast', temp=1.0, top_k=5, train_epochs=10, use_amp=True, use_gpu=True, use_multi_gpu=True)
+Use GPU: cuda:0
+>>>>>>>start training : long_term_forecast_kdd_femprocess_336_TimeMKG_DYG_LLM_ftM_sl96_ll48_pl336_dm64_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+✅ 成功加载 Semantic Embeddings: /home/home_new/syc/code/Timeserise_Library/qwen_emb_2048/embeddings_sub1_train.npy
+Warning: Embedding length (75516) != Data length (79754). Aligning...
+  -> Padded 4238 zeros to the end.
+train 79323
+✅ 成功加载 Semantic Embeddings: /home/home_new/syc/code/Timeserise_Library/qwen_emb_2048/embeddings_sub1_val.npy
+Warning: Embedding length (10783) != Data length (11490). Aligning...
+  -> Padded 707 zeros to the end.
+val 11059
+✅ 成功加载 Semantic Embeddings: /home/home_new/syc/code/Timeserise_Library/qwen_emb_2048/embeddings_sub1_test.npy
+Warning: Embedding length (21587) != Data length (22883). Aligning...
+  -> Padded 1296 zeros to the end.
+test 22452
+	iters: 100, epoch: 1 | loss: 1.1239974
+	speed: 0.3634s/iter; left time: 1087.0220s
+	iters: 200, epoch: 1 | loss: 1.1380800
+	speed: 0.3390s/iter; left time: 980.0602s
+	iters: 300, epoch: 1 | loss: 1.1457638
+	speed: 0.3158s/iter; left time: 881.4945s
+Epoch: 1 cost time: 104.77320694923401
+Epoch: 1, Steps: 309 | Train Loss: 1.1216363 Vali Loss: 1.0506425 Test Loss: 1.2231802
+Validation loss decreased (inf --> 1.050642).  Saving model ...
+Updating learning rate to 0.0001
+	iters: 100, epoch: 2 | loss: 1.0140676
+	speed: 7.1311s/iter; left time: 19125.5822s
+	iters: 200, epoch: 2 | loss: 0.9549392
+	speed: 0.3132s/iter; left time: 808.7110s
+	iters: 300, epoch: 2 | loss: 0.8439117
+	speed: 0.3178s/iter; left time: 788.7814s
+Epoch: 2 cost time: 98.00142621994019
+Epoch: 2, Steps: 309 | Train Loss: 0.9943215 Vali Loss: 0.9182252 Test Loss: 1.1155580
+Validation loss decreased (1.050642 --> 0.918225).  Saving model ...
+Updating learning rate to 5e-05
+	iters: 100, epoch: 3 | loss: 0.9642627
+	speed: 6.0658s/iter; left time: 14394.0726s
+	iters: 200, epoch: 3 | loss: 0.8013994
+	speed: 0.3030s/iter; left time: 688.7021s
+	iters: 300, epoch: 3 | loss: 0.9193497
+	speed: 0.2866s/iter; left time: 622.6885s
+Epoch: 3 cost time: 92.14003348350525
+Epoch: 3, Steps: 309 | Train Loss: 0.9118362 Vali Loss: 0.8653544 Test Loss: 1.0737422
+Validation loss decreased (0.918225 --> 0.865354).  Saving model ...
+Updating learning rate to 2.5e-05
+	iters: 100, epoch: 4 | loss: 0.7816036
+	speed: 6.0842s/iter; left time: 12557.7564s
+	iters: 200, epoch: 4 | loss: 0.9150236
+	speed: 0.2871s/iter; left time: 563.9090s
+	iters: 300, epoch: 4 | loss: 0.8340113
+	speed: 0.2927s/iter; left time: 545.6758s
+Epoch: 4 cost time: 91.51136302947998
+Epoch: 4, Steps: 309 | Train Loss: 0.8817835 Vali Loss: 0.8481261 Test Loss: 1.0617263
+Validation loss decreased (0.865354 --> 0.848126).  Saving model ...
+Updating learning rate to 1.25e-05
+	iters: 100, epoch: 5 | loss: 0.8844324
+	speed: 5.9835s/iter; left time: 10500.9962s
+	iters: 200, epoch: 5 | loss: 0.8829015
+	speed: 0.2868s/iter; left time: 474.6483s
+	iters: 300, epoch: 5 | loss: 0.8286785
+	speed: 0.2875s/iter; left time: 447.0175s
+Epoch: 5 cost time: 90.13370037078857
+Epoch: 5, Steps: 309 | Train Loss: 0.8695508 Vali Loss: 0.8401190 Test Loss: 1.0560112
+Validation loss decreased (0.848126 --> 0.840119).  Saving model ...
+Updating learning rate to 6.25e-06
+	iters: 100, epoch: 6 | loss: 0.8531878
+	speed: 5.6396s/iter; left time: 8154.8359s
+	iters: 200, epoch: 6 | loss: 0.9237863
+	speed: 0.2804s/iter; left time: 377.3915s
+	iters: 300, epoch: 6 | loss: 0.8285930
+	speed: 0.2900s/iter; left time: 361.3956s
+Epoch: 6 cost time: 89.02841353416443
+Epoch: 6, Steps: 309 | Train Loss: 0.8641543 Vali Loss: 0.8345535 Test Loss: 1.0522785
+Validation loss decreased (0.840119 --> 0.834553).  Saving model ...
+Updating learning rate to 3.125e-06
+	iters: 100, epoch: 7 | loss: 0.8795559
+	speed: 5.6013s/iter; left time: 6368.6901s
+	iters: 200, epoch: 7 | loss: 0.9478400
+	speed: 0.2774s/iter; left time: 287.6441s
+	iters: 300, epoch: 7 | loss: 0.8740233
+	speed: 0.2806s/iter; left time: 262.8982s
+Epoch: 7 cost time: 88.36798477172852
+Epoch: 7, Steps: 309 | Train Loss: 0.8613969 Vali Loss: 0.8327733 Test Loss: 1.0526732
+Validation loss decreased (0.834553 --> 0.832773).  Saving model ...
+Updating learning rate to 1.5625e-06
+	iters: 100, epoch: 8 | loss: 0.9022650
+	speed: 5.6431s/iter; left time: 4672.5080s
+	iters: 200, epoch: 8 | loss: 0.8009371
+	speed: 0.2793s/iter; left time: 203.3444s
+	iters: 300, epoch: 8 | loss: 0.8942959
+	speed: 0.2684s/iter; left time: 168.5567s
+Epoch: 8 cost time: 87.6170392036438
+Epoch: 8, Steps: 309 | Train Loss: 0.8592436 Vali Loss: 0.8318512 Test Loss: 1.0524833
+Validation loss decreased (0.832773 --> 0.831851).  Saving model ...
+Updating learning rate to 7.8125e-07
+	iters: 100, epoch: 9 | loss: 0.9155968
+	speed: 5.6223s/iter; left time: 2917.9562s
+	iters: 200, epoch: 9 | loss: 0.8848554
+	speed: 0.2684s/iter; left time: 112.4447s
+	iters: 300, epoch: 9 | loss: 0.7779178
+	speed: 0.2775s/iter; left time: 88.5333s
+Epoch: 9 cost time: 85.73296451568604
+Epoch: 9, Steps: 309 | Train Loss: 0.8584042 Vali Loss: 0.8310422 Test Loss: 1.0522335
+Validation loss decreased (0.831851 --> 0.831042).  Saving model ...
+Updating learning rate to 3.90625e-07
+	iters: 100, epoch: 10 | loss: 0.8012860
+	speed: 4.3516s/iter; left time: 913.8262s
+	iters: 200, epoch: 10 | loss: 0.8618215
+	speed: 0.2601s/iter; left time: 28.6105s
+	iters: 300, epoch: 10 | loss: 0.8049259
+	speed: 0.2533s/iter; left time: 2.5326s
+Epoch: 10 cost time: 81.07173490524292
+Epoch: 10, Steps: 309 | Train Loss: 0.8586721 Vali Loss: 0.8307192 Test Loss: 1.0518728
+Validation loss decreased (0.831042 --> 0.830719).  Saving model ...
+Updating learning rate to 1.953125e-07
+>>>>>>>testing : long_term_forecast_kdd_femprocess_336_TimeMKG_DYG_LLM_ftM_sl96_ll48_pl336_dm64_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+✅ 成功加载 Semantic Embeddings: /home/home_new/syc/code/Timeserise_Library/qwen_emb_2048/embeddings_sub1_test.npy
+Warning: Embedding length (21587) != Data length (22883). Aligning...
+  -> Padded 1296 zeros to the end.
+test 22452
+test shape: (22452, 1, 336, 5) (22452, 1, 336, 5)
+test shape: (22452, 336, 5) (22452, 336, 5)
+mae:0.6249, mse:1.0519
+(22452, 336, 5)
+(22452, 336, 5)

@@ -1,0 +1,124 @@
+True
+2.3.0
+True
+Args in experiment:
+Namespace(activation='gelu', anomaly_ratio=0.25, batch_size=256, c_out=5, channel_independent=1, checkpoints='./checkpoints/', d_ff=512, d_layers=1, d_model=1024, data='DYG_base', data_path='DYG_data_3_sub2.csv', dec_in=5, des='Exp', device_ids=[1, 2, 3, 4], devices='1,2,3,4', direction=[1, 1, 2, 0, 2], distil=True, dropout=0.1, e_layers=2, embed='timeF', enc_in=5, enc_out=5, factor=3, features='M', freq='h', gpu=1, inverse=False, is_training=1, itr=1, label_len=48, learning_rate=0.0001, loss='MSE', lradj='type1', mask_rate=0.25, model='iTransformer', model_id='kdd_sub2_720', moe_logits_init='{\n    "0": {0: 3.0, 1: 2.0, 2: 5.0},\n    "1": {0: 5.0, 1: 3.0, 2: 1.0},\n    "2": {0: 2.0, 1: 5.0, 2: 3.0}, \n    "3": {0: -5.0, 1: 3.0, 2: 5.0},\n    "4": {0: 5.0, 1: 4.0, 2: -5.0}\n}', moving_avg=25, n_heads=8, num_kernels=6, num_workers=10, output_attention=False, p_hidden_dims=[128, 128], p_hidden_layers=2, patience=3, pred_len=720, root_path='./data/DYG/KDD', seasonal_patterns='Monthly', seg_len=12, seq_len=96, target='zs', task_name='long_term_forecast', top_k=5, train_epochs=10, use_amp=True, use_gpu=True, use_multi_gpu=True)
+Use GPU: cuda:1
+>>>>>>>start training : long_term_forecast_kdd_sub2_720_iTransformer_DYG_base_ftM_sl96_ll48_pl720_dm1024_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Viscosity', 'Chemical Efficiency', 'DO Value', 'pH Online',
+       'Air Flow'],
+      dtype='object')
+train 74820
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Viscosity', 'Chemical Efficiency', 'DO Value', 'pH Online',
+       'Air Flow'],
+      dtype='object')
+val 10087
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Viscosity', 'Chemical Efficiency', 'DO Value', 'pH Online',
+       'Air Flow'],
+      dtype='object')
+test 20891
+	iters: 100, epoch: 1 | loss: 1.0614901
+	speed: 0.1143s/iter; left time: 322.3819s
+	iters: 200, epoch: 1 | loss: 0.7834499
+	speed: 0.0988s/iter; left time: 268.9218s
+Epoch: 1 cost time: 30.642150402069092
+Epoch: 1, Steps: 292 | Train Loss: 0.8750348 Vali Loss: 0.7601594 Test Loss: 7.5630593
+Validation loss decreased (inf --> 0.760159).  Saving model ...
+Updating learning rate to 0.0001
+	iters: 100, epoch: 2 | loss: 0.7209290
+	speed: 1.6790s/iter; left time: 4246.2426s
+	iters: 200, epoch: 2 | loss: 0.7834648
+	speed: 0.0799s/iter; left time: 194.0602s
+Epoch: 2 cost time: 23.800169944763184
+Epoch: 2, Steps: 292 | Train Loss: 0.7914988 Vali Loss: 0.7609142 Test Loss: 7.4370198
+EarlyStopping counter: 1 out of 3
+Updating learning rate to 5e-05
+	iters: 100, epoch: 3 | loss: 0.6949622
+	speed: 1.2624s/iter; left time: 2823.9431s
+	iters: 200, epoch: 3 | loss: 0.7025868
+	speed: 0.0823s/iter; left time: 175.7713s
+Epoch: 3 cost time: 24.00575590133667
+Epoch: 3, Steps: 292 | Train Loss: 0.7618482 Vali Loss: 0.7629739 Test Loss: 7.4383640
+EarlyStopping counter: 2 out of 3
+Updating learning rate to 2.5e-05
+	iters: 100, epoch: 4 | loss: 0.7172900
+	speed: 1.8305s/iter; left time: 3560.3325s
+	iters: 200, epoch: 4 | loss: 0.8034945
+	speed: 0.0829s/iter; left time: 153.0221s
+Epoch: 4 cost time: 24.698331117630005
+Epoch: 4, Steps: 292 | Train Loss: 0.7471913 Vali Loss: 0.7630324 Test Loss: 7.3696895
+EarlyStopping counter: 3 out of 3
+Early stopping
+Updating learning rate to 1.25e-05
+	iters: 100, epoch: 5 | loss: 0.8109894
+	speed: 1.2751s/iter; left time: 2107.7351s
+	iters: 200, epoch: 5 | loss: 0.7043198
+	speed: 0.0787s/iter; left time: 122.2604s
+Epoch: 5 cost time: 23.945425510406494
+Epoch: 5, Steps: 292 | Train Loss: 0.7386472 Vali Loss: 0.7660245 Test Loss: 7.3500280
+EarlyStopping counter: 4 out of 3
+Early stopping
+Updating learning rate to 6.25e-06
+	iters: 100, epoch: 6 | loss: 0.6697125
+	speed: 1.2862s/iter; left time: 1750.5609s
+	iters: 200, epoch: 6 | loss: 0.6403220
+	speed: 0.0842s/iter; left time: 106.2302s
+Epoch: 6 cost time: 23.00702691078186
+Epoch: 6, Steps: 292 | Train Loss: 0.7349274 Vali Loss: 0.7691896 Test Loss: 7.3337870
+EarlyStopping counter: 5 out of 3
+Early stopping
+Updating learning rate to 3.125e-06
+	iters: 100, epoch: 7 | loss: 0.7369415
+	speed: 1.9837s/iter; left time: 2120.6001s
+	iters: 200, epoch: 7 | loss: 0.8083572
+	speed: 0.0794s/iter; left time: 76.9353s
+Epoch: 7 cost time: 23.729068756103516
+Epoch: 7, Steps: 292 | Train Loss: 0.7328479 Vali Loss: 0.7703122 Test Loss: 7.3481607
+EarlyStopping counter: 6 out of 3
+Early stopping
+Updating learning rate to 1.5625e-06
+	iters: 100, epoch: 8 | loss: 0.7842060
+	speed: 1.8386s/iter; left time: 1428.6078s
+	iters: 200, epoch: 8 | loss: 0.8445444
+	speed: 0.0749s/iter; left time: 50.6745s
+Epoch: 8 cost time: 23.169187545776367
+Epoch: 8, Steps: 292 | Train Loss: 0.7314840 Vali Loss: 0.7688189 Test Loss: 7.3349500
+EarlyStopping counter: 7 out of 3
+Early stopping
+Updating learning rate to 7.8125e-07
+	iters: 100, epoch: 9 | loss: 0.7462705
+	speed: 1.8253s/iter; left time: 885.2475s
+	iters: 200, epoch: 9 | loss: 0.6889376
+	speed: 0.0754s/iter; left time: 29.0392s
+Epoch: 9 cost time: 26.190663814544678
+Epoch: 9, Steps: 292 | Train Loss: 0.7310372 Vali Loss: 0.7690965 Test Loss: 7.3337793
+EarlyStopping counter: 8 out of 3
+Early stopping
+Updating learning rate to 3.90625e-07
+	iters: 100, epoch: 10 | loss: 0.6988826
+	speed: 2.3856s/iter; left time: 460.4289s
+	iters: 200, epoch: 10 | loss: 0.6938691
+	speed: 0.1631s/iter; left time: 15.1723s
+Epoch: 10 cost time: 45.8318395614624
+Epoch: 10, Steps: 292 | Train Loss: 0.7310874 Vali Loss: 0.7688254 Test Loss: 7.3360391
+EarlyStopping counter: 9 out of 3
+Early stopping
+Updating learning rate to 1.953125e-07
+>>>>>>>testing : long_term_forecast_kdd_sub2_720_iTransformer_DYG_base_ftM_sl96_ll48_pl720_dm1024_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Viscosity', 'Chemical Efficiency', 'DO Value', 'pH Online',
+       'Air Flow'],
+      dtype='object')
+test 20891
+test shape: (20891, 1, 720, 5) (20891, 1, 720, 5)
+test shape: (20891, 720, 5) (20891, 720, 5)
+mae:0.7933, mse:7.5631
+(20891, 720, 5)
+(20891, 720, 5)

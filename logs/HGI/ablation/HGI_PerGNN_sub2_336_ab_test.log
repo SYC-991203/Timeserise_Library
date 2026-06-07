@@ -1,0 +1,109 @@
+True
+2.3.0
+True
+Args in experiment:
+Namespace(activation='gelu', anomaly_ratio=0.25, batch_size=512, c_out=5, channel_independent=1, checkpoints='./checkpoints/', d_ff=512, d_layers=1, d_model=1024, data='DYG_base', data_path='DYG_data_3_sub2.csv', dec_in=5, des='Exp', device_ids=[1, 2, 3, 4], devices='1,2,3,4', direction=[1, 1, 2, 0, 2], distil=True, dropout=0.1, e_layers=2, embed='timeF', enc_in=5, enc_out=5, factor=3, features='M', freq='h', gpu=1, inverse=False, is_training=1, itr=1, label_len=48, learning_rate=0.0001, loss='MSE', lradj='type1', mask_rate=0.25, model='HGI_PerGNN', model_id='kdd_sub2_336', moe_logits_init='{\n    "0": {0: 3.0, 1: 2.0, 2: 5.0},\n    "1": {0: 5.0, 1: 3.0, 2: 1.0},\n    "2": {0: 2.0, 1: 5.0, 2: 3.0}, \n    "3": {0: -5.0, 1: 3.0, 2: 5.0},\n    "4": {0: 5.0, 1: 4.0, 2: -5.0}\n}', moving_avg=25, n_heads=8, num_kernels=6, num_workers=10, output_attention=False, p_hidden_dims=[128, 128], p_hidden_layers=2, patience=3, pred_len=336, root_path='./data/DYG/KDD', seasonal_patterns='Monthly', seg_len=12, seq_len=96, target='ab_test', task_name='long_term_forecast', temp=5.0, top_k=5, train_epochs=10, use_amp=True, use_gpu=True, use_multi_gpu=True)
+Use GPU: cuda:1
+
+[PearsonGNN] ✅ Detected Dataset: sub2
+[PearsonGNN] 🧊 Matrix Loaded & FROZEN (Grad=False).
+=== Static Pearson Topology Preview ===
+v0->v1[-0.62] | v1->v4[-0.85] | v2->v4[-0.51] | v3->v4[0.23] | v4->v1[-0.85]
+=======================================
+
+>>>>>>>start training : long_term_forecast_kdd_sub2_336_HGI_PerGNN_DYG_base_ftM_sl96_ll48_pl336_dm1024_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Viscosity', 'Chemical Efficiency', 'DO Value', 'pH Online',
+       'Air Flow'],
+      dtype='object')
+train 75204
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Viscosity', 'Chemical Efficiency', 'DO Value', 'pH Online',
+       'Air Flow'],
+      dtype='object')
+val 10471
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Viscosity', 'Chemical Efficiency', 'DO Value', 'pH Online',
+       'Air Flow'],
+      dtype='object')
+test 21275
+	iters: 100, epoch: 1 | loss: 0.5689817
+	speed: 0.1336s/iter; left time: 181.8744s
+Epoch: 1 cost time: 18.30701732635498
+Epoch: 1, Steps: 146 | Train Loss: 0.6428312 Vali Loss: 0.5623053 Test Loss: 4.5088611
+Validation loss decreased (inf --> 0.562305).  Saving model ...
+Updating learning rate to 0.0001
+	iters: 100, epoch: 2 | loss: 0.4646751
+	speed: 1.1099s/iter; left time: 1348.5802s
+Epoch: 2 cost time: 15.864563226699829
+Epoch: 2, Steps: 146 | Train Loss: 0.5343173 Vali Loss: 0.5536792 Test Loss: 4.4894791
+Validation loss decreased (0.562305 --> 0.553679).  Saving model ...
+Updating learning rate to 5e-05
+	iters: 100, epoch: 3 | loss: 0.4998457
+	speed: 1.1008s/iter; left time: 1176.7027s
+Epoch: 3 cost time: 16.104310989379883
+Epoch: 3, Steps: 146 | Train Loss: 0.5148156 Vali Loss: 0.5535442 Test Loss: 4.5052242
+Validation loss decreased (0.553679 --> 0.553544).  Saving model ...
+Updating learning rate to 2.5e-05
+	iters: 100, epoch: 4 | loss: 0.4721388
+	speed: 1.0990s/iter; left time: 1014.3416s
+Epoch: 4 cost time: 16.212668895721436
+Epoch: 4, Steps: 146 | Train Loss: 0.5068519 Vali Loss: 0.5599793 Test Loss: 4.5193610
+EarlyStopping counter: 1 out of 3
+Updating learning rate to 1.25e-05
+	iters: 100, epoch: 5 | loss: 0.4914228
+	speed: 1.1041s/iter; left time: 857.8647s
+Epoch: 5 cost time: 16.06634259223938
+Epoch: 5, Steps: 146 | Train Loss: 0.5030200 Vali Loss: 0.5563768 Test Loss: 4.5168400
+EarlyStopping counter: 2 out of 3
+Updating learning rate to 6.25e-06
+	iters: 100, epoch: 6 | loss: 0.5174111
+	speed: 1.1004s/iter; left time: 694.3826s
+Epoch: 6 cost time: 15.920077562332153
+Epoch: 6, Steps: 146 | Train Loss: 0.5006830 Vali Loss: 0.5585901 Test Loss: 4.5268593
+EarlyStopping counter: 3 out of 3
+Early stopping
+Updating learning rate to 3.125e-06
+	iters: 100, epoch: 7 | loss: 0.5165307
+	speed: 1.1092s/iter; left time: 537.9743s
+Epoch: 7 cost time: 16.18755269050598
+Epoch: 7, Steps: 146 | Train Loss: 0.4994934 Vali Loss: 0.5555755 Test Loss: 4.5223589
+EarlyStopping counter: 4 out of 3
+Early stopping
+Updating learning rate to 1.5625e-06
+	iters: 100, epoch: 8 | loss: 0.4910135
+	speed: 1.1039s/iter; left time: 374.2124s
+Epoch: 8 cost time: 16.62882685661316
+Epoch: 8, Steps: 146 | Train Loss: 0.4991640 Vali Loss: 0.5568309 Test Loss: 4.5224638
+EarlyStopping counter: 5 out of 3
+Early stopping
+Updating learning rate to 7.8125e-07
+	iters: 100, epoch: 9 | loss: 0.5154421
+	speed: 1.0896s/iter; left time: 210.2903s
+Epoch: 9 cost time: 16.324965000152588
+Epoch: 9, Steps: 146 | Train Loss: 0.4985271 Vali Loss: 0.5558750 Test Loss: 4.5218282
+EarlyStopping counter: 6 out of 3
+Early stopping
+Updating learning rate to 3.90625e-07
+	iters: 100, epoch: 10 | loss: 0.5090206
+	speed: 1.0971s/iter; left time: 51.5642s
+Epoch: 10 cost time: 16.142998456954956
+Epoch: 10, Steps: 146 | Train Loss: 0.4986759 Vali Loss: 0.5565687 Test Loss: 4.5220280
+EarlyStopping counter: 7 out of 3
+Early stopping
+Updating learning rate to 1.953125e-07
+>>>>>>>testing : long_term_forecast_kdd_sub2_336_HGI_PerGNN_DYG_base_ftM_sl96_ll48_pl336_dm1024_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_Exp_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+DYG_base
+原始数据形状: (108051, 6)
+Index(['Viscosity', 'Chemical Efficiency', 'DO Value', 'pH Online',
+       'Air Flow'],
+      dtype='object')
+test 21275
+test shape: (21275, 1, 336, 5) (21275, 1, 336, 5)
+test shape: (21275, 336, 5) (21275, 336, 5)
+mae:0.5884, mse:4.5052
+(21275, 336, 5)
+(21275, 336, 5)

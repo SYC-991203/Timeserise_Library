@@ -1,0 +1,130 @@
+True
+2.3.0
+True
+Args in experiment:
+Namespace(activation='gelu', anomaly_ratio=0.25, batch_size=64, c_out=1, checkpoints='./checkpoints/', d_ff=512, d_layers=1, d_model=256, data='DYG_vmd', data_path='kla_case.csv', dec_in=1, des='test', device_ids=[7], devices='7', direction=[1, 1, 0, 0, 0], distil=True, dropout=0.1, e_layers=2, embed='timeF', enc_in=1, enc_out=5, factor=3, features='S', freq='h', gpu=7, inverse=False, is_training=1, itr=1, label_len=48, learning_rate=0.0001, loss='MSE', lradj='type1', mask_rate=0.25, model='Transformer', model_id='WoPiplineTest', moving_avg=25, n_heads=8, num_kernels=6, num_workers=10, output_attention=True, p_hidden_dims=[128, 128], p_hidden_layers=2, patience=3, pred_len=96, root_path='./data/DYG/', seasonal_patterns='Monthly', seq_len=250, target='error', task_name='long_term_forecast', top_k=5, train_epochs=10, use_amp=False, use_gpu=True, use_multi_gpu=True)
+Use GPU: cuda:7
+>>>>>>>start training : long_term_forecast_WoPiplineTest_Transformer_DYG_vmd_ftS_sl250_ll48_pl96_dm256_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_test_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+DYG_u_data_loader
+cut_off: (31161, 7)
+train 21467
+DYG_u_data_loader
+cut_off: (31161, 7)
+val 3022
+DYG_u_data_loader
+cut_off: (31161, 7)
+test 6137
+	iters: 100, epoch: 1 | loss: 0.9014975
+	speed: 0.1594s/iter; left time: 518.3632s
+	iters: 200, epoch: 1 | loss: 0.7991020
+	speed: 0.1468s/iter; left time: 462.4861s
+	iters: 300, epoch: 1 | loss: 0.7457085
+	speed: 0.1454s/iter; left time: 443.7230s
+Epoch: 1 cost time: 50.309823513031006
+Epoch: 1, Steps: 335 | Train Loss: 0.8531311 Vali Loss: 0.6107239 Test Loss: 0.9401443
+Validation loss decreased (inf --> 0.610724).  Saving model ...
+Updating learning rate to 0.0001
+	iters: 100, epoch: 2 | loss: 0.6648110
+	speed: 0.5334s/iter; left time: 1555.4856s
+	iters: 200, epoch: 2 | loss: 0.5902764
+	speed: 0.1443s/iter; left time: 406.4751s
+	iters: 300, epoch: 2 | loss: 0.5602652
+	speed: 0.1441s/iter; left time: 391.3050s
+Epoch: 2 cost time: 48.531028509140015
+Epoch: 2, Steps: 335 | Train Loss: 0.6318634 Vali Loss: 0.4852538 Test Loss: 0.8258126
+Validation loss decreased (0.610724 --> 0.485254).  Saving model ...
+Updating learning rate to 5e-05
+	iters: 100, epoch: 3 | loss: 0.5239329
+	speed: 0.5339s/iter; left time: 1378.1041s
+	iters: 200, epoch: 3 | loss: 0.5114495
+	speed: 0.1444s/iter; left time: 358.3325s
+	iters: 300, epoch: 3 | loss: 0.4578709
+	speed: 0.1442s/iter; left time: 343.2218s
+Epoch: 3 cost time: 48.53702235221863
+Epoch: 3, Steps: 335 | Train Loss: 0.5013989 Vali Loss: 0.4016646 Test Loss: 0.7253621
+Validation loss decreased (0.485254 --> 0.401665).  Saving model ...
+Updating learning rate to 2.5e-05
+	iters: 100, epoch: 4 | loss: 0.4419504
+	speed: 0.5206s/iter; left time: 1169.3351s
+	iters: 200, epoch: 4 | loss: 0.4621105
+	speed: 0.1412s/iter; left time: 303.0055s
+	iters: 300, epoch: 4 | loss: 0.4254503
+	speed: 0.1410s/iter; left time: 288.4895s
+Epoch: 4 cost time: 47.47934412956238
+Epoch: 4, Steps: 335 | Train Loss: 0.4469673 Vali Loss: 0.3714333 Test Loss: 0.6881211
+Validation loss decreased (0.401665 --> 0.371433).  Saving model ...
+Updating learning rate to 1.25e-05
+	iters: 100, epoch: 5 | loss: 0.4338297
+	speed: 0.5321s/iter; left time: 1016.7598s
+	iters: 200, epoch: 5 | loss: 0.4405909
+	speed: 0.1420s/iter; left time: 257.2169s
+	iters: 300, epoch: 5 | loss: 0.3997095
+	speed: 0.1418s/iter; left time: 242.6172s
+Epoch: 5 cost time: 47.775262117385864
+Epoch: 5, Steps: 335 | Train Loss: 0.4272294 Vali Loss: 0.3580162 Test Loss: 0.6742896
+Validation loss decreased (0.371433 --> 0.358016).  Saving model ...
+Updating learning rate to 6.25e-06
+	iters: 100, epoch: 6 | loss: 0.4261755
+	speed: 0.5378s/iter; left time: 847.5467s
+	iters: 200, epoch: 6 | loss: 0.4158158
+	speed: 0.1437s/iter; left time: 212.1327s
+	iters: 300, epoch: 6 | loss: 0.4159381
+	speed: 0.1437s/iter; left time: 197.7257s
+Epoch: 6 cost time: 48.340416431427
+Epoch: 6, Steps: 335 | Train Loss: 0.4179072 Vali Loss: 0.3522637 Test Loss: 0.6650908
+Validation loss decreased (0.358016 --> 0.352264).  Saving model ...
+Updating learning rate to 3.125e-06
+	iters: 100, epoch: 7 | loss: 0.4342250
+	speed: 0.5343s/iter; left time: 663.0484s
+	iters: 200, epoch: 7 | loss: 0.4227876
+	speed: 0.1446s/iter; left time: 165.0145s
+	iters: 300, epoch: 7 | loss: 0.4141805
+	speed: 0.1442s/iter; left time: 150.0978s
+Epoch: 7 cost time: 48.59281086921692
+Epoch: 7, Steps: 335 | Train Loss: 0.4133814 Vali Loss: 0.3508937 Test Loss: 0.6616923
+Validation loss decreased (0.352264 --> 0.350894).  Saving model ...
+Updating learning rate to 1.5625e-06
+	iters: 100, epoch: 8 | loss: 0.4046893
+	speed: 0.5392s/iter; left time: 488.4769s
+	iters: 200, epoch: 8 | loss: 0.4175133
+	speed: 0.1428s/iter; left time: 115.1121s
+	iters: 300, epoch: 8 | loss: 0.4066101
+	speed: 0.1426s/iter; left time: 100.6922s
+Epoch: 8 cost time: 48.081427335739136
+Epoch: 8, Steps: 335 | Train Loss: 0.4107917 Vali Loss: 0.3501855 Test Loss: 0.6594945
+Validation loss decreased (0.350894 --> 0.350185).  Saving model ...
+Updating learning rate to 7.8125e-07
+	iters: 100, epoch: 9 | loss: 0.4107117
+	speed: 0.5219s/iter; left time: 298.0134s
+	iters: 200, epoch: 9 | loss: 0.3909072
+	speed: 0.1430s/iter; left time: 67.3731s
+	iters: 300, epoch: 9 | loss: 0.4115974
+	speed: 0.1430s/iter; left time: 53.0533s
+Epoch: 9 cost time: 48.1371865272522
+Epoch: 9, Steps: 335 | Train Loss: 0.4092169 Vali Loss: 0.3491616 Test Loss: 0.6577558
+Validation loss decreased (0.350185 --> 0.349162).  Saving model ...
+Updating learning rate to 3.90625e-07
+	iters: 100, epoch: 10 | loss: 0.4258164
+	speed: 0.5343s/iter; left time: 126.0874s
+	iters: 200, epoch: 10 | loss: 0.4159794
+	speed: 0.1444s/iter; left time: 19.6325s
+	iters: 300, epoch: 10 | loss: 0.4054049
+	speed: 0.1441s/iter; left time: 5.1883s
+Epoch: 10 cost time: 48.56631112098694
+Epoch: 10, Steps: 335 | Train Loss: 0.4089210 Vali Loss: 0.3480394 Test Loss: 0.6572194
+Validation loss decreased (0.349162 --> 0.348039).  Saving model ...
+Updating learning rate to 1.953125e-07
+Trainging over!!
+Saved the data
+Saved the data
+>>>>>>>testing : long_term_forecast_WoPiplineTest_Transformer_DYG_vmd_ftS_sl250_ll48_pl96_dm256_nh8_el2_dl1_df512_fc3_ebtimeF_dtTrue_test_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+DYG_u_data_loader
+cut_off: (31161, 7)
+test 6137
+test shape: (6137, 1, 96, 1) (6137, 1, 96, 1)
+test shape: (6137, 96, 1) (6137, 96, 1)
+mae:0.5829, mse:0.6572
+Saved the data
+Saved the data
+(6137, 96, 1)
+(6137, 96, 1)
