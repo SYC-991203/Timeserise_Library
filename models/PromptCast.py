@@ -24,7 +24,7 @@ class Model(nn.Module):
         # 你的 API 信息（任选其一）
         # ================================
         self.client = OpenAI(
-            api_key="sk-a8fe03afa3d04d639dd638d9e782ce00",
+            api_key="sk-a8xxxxxxxxx",
             base_url="https://api.deepseek.com/v1"               # DeepSeek
             # base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"  # Qwen
             # base_url="https://api.openai.com/v1"                # OpenAI
